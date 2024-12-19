@@ -1,0 +1,52 @@
+@import './base.css';
+
+#app {
+  max-width: 1280px;
+  flex-grow: 1;
+  margin: 0 auto;
+  padding: 2rem;
+  font-weight: normal;
+  background-color: var(--color-background-mute);
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+  padding: 3px;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+nav button {
+  margin: 2.5px 10px;
+  cursor: pointer;
+  border: none;
+  padding: 10px 20px;
+  font-size: large;
+  font-weight: bold;
+  border-radius: 10px;
+  width: 150px;
+}
+
+button:hover {
+  border-radius: 5px;
+}
+
+button.selected {
+  color: var(--vt-c-white);
+  border-style: solid;
+  border-width: 2.5px;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
