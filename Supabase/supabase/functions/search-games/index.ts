@@ -5,9 +5,15 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
+import { corsHeaders } from '../_shared/cors.ts'
 import { matchSorter } from 'npm:match-sorter'
 
 Deno.serve(async (req) => {
+
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
   const { name } = await req.json()
 
   const IGDBAuthResponse = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${Deno.env.get('CLIENT_ID')}&client_secret=${Deno.env.get('CLIENT_SECRET')}&grant_type=client_credentials`, {
@@ -15,11 +21,11 @@ Deno.serve(async (req) => {
   });
   const IGDBAuthData = await IGDBAuthResponse.json();
 
-  const body = `search "${name}"; limit 100; fields name, cover.image_id; where version_parent = null; where parent_game = null;`
+  const body = `search "${name}"; limit 100; fields name, cover.image_id; where version_parent = null & parent_game = null & cover != null;`
 
   const headers = new Headers({
-      "Client-ID": Deno.env.get('CLIENT_ID'),
-      "Authorization": `Bearer ${IGDBAuthData.access_token}`
+    "Client-ID": Deno.env.get('CLIENT_ID'),
+    "Authorization": `Bearer ${IGDBAuthData.access_token}`
   })
 
   const IGDBSearchResponse = await fetch(`https://api.igdb.com/v4/games`, {
@@ -38,7 +44,7 @@ Deno.serve(async (req) => {
 
   return new Response(
     JSON.stringify(sortedIGDBSearchData),
-    { status: 200, headers: { "Content-Type": "application/json" } },
+    { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
   )
 })
 
