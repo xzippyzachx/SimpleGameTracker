@@ -16,10 +16,12 @@ defineProps({
 </script>
 
 <template>
-  <div class="game-card">
-    <div class="img" :style="{ backgroundImage: 'url(' + cover + ')'}"></div>
-    <h3>{{ name }}</h3>
-  </div>
+  <RouterLink :to="{ name: 'game', params: { gameId: id } }">
+    <div class="game-card">
+      <div class="img" :style="{ backgroundImage: 'url(' + cover + ')'}"></div>
+      <h3>{{ name }}</h3>
+    </div>
+  </RouterLink>
 </template>
 
 <style scoped>

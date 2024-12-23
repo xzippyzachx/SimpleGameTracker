@@ -1,7 +1,15 @@
 <script setup>
+const props = defineProps({
+  state: {
+    type: String,
+    required: false,
+  },
+})
+
 import { ref } from 'vue'
 
-let state = ref('playing')
+let state = ref(props.state)
+
 </script>
 
 <template>

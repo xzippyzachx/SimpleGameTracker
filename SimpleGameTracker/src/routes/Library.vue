@@ -6,21 +6,24 @@ import StateNav from '../components/StateNav.vue'
 <template>
   <header>
     <div>
-      <a href="#/search"><button id="add-game-btn">Add Game</button></a>
+      <RouterLink :to="{ name: 'search' }">
+        <button id="add-game-btn">Add Game</button>
+      </RouterLink>
     </div>
-    <StateNav/>
+    <StateNav state="playing"/>
   </header>
 
   <main>
-    <GameCard name="The Finals"/>
-    <GameCard name="Helldivers 2"/>
-    <GameCard name="Battlefield 2042"/>
+    <GameCard :id="1" name="The Finals" cover="/"/>
+    <GameCard :id="2" name="Helldivers 2" cover="/"/>
+    <GameCard :id="3" name="Battlefield 2042" cover="/"/>
   </main>
 </template>
 
 <style scoped>
   main {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
   }
 

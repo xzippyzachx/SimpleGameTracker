@@ -32,16 +32,24 @@ Deno.serve(async (req) => {
     body: body,
     headers: headers,
   });
-  const gameData = await IGDBGameResponse.json();
+  let gameData = await IGDBGameResponse.json();
 
-  gameData.forEach(game => {
-    let imageId = game.cover.image_id
-    game.cover = `https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`
-  });
+  if (gameData.length != 1)
+  {
+    return new Response(
+      "Invalid gameID",
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    )
+  }
+
+  gameData = gameData[0]
+  let imageId = gameData.cover.image_id
+  gameData.cover = `https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`
 
   return new Response(
     JSON.stringify(gameData),
     { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
   )
+
 })
 

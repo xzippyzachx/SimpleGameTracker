@@ -31,7 +31,7 @@ function SearchGame()
 <template>
   <header>
     <div>
-      <a href="#/"><button>Library</button></a>
+      <button @click="$router.back()">Back</button>
     </div>
 
     <div>
