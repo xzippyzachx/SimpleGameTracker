@@ -24,7 +24,7 @@ defineProps({
   <RouterLink :to="{ name: 'game', params: { gameId: id } }">
     <div class="game-card" :class="{wishlist: state == 'wishlist', playing: state == 'playing', completed: state == 'completed'}">
       <div class="img" :style="{ backgroundImage: 'url(' + cover + ')'}"></div>
-      <h3>{{ name }}</h3>
+      <h3><span :class="{wishlist: state == 'wishlist', playing: state == 'playing', completed: state == 'completed'}">{{ name }}</span></h3>
     </div>
   </RouterLink>
 </template>
@@ -53,21 +53,36 @@ defineProps({
     background-repeat: no-repeat;
   }
 
-  .game-card.wishlist {
-    border-color: var(--vt-wishlist-c);
+  .wishlist {
+    border-color: var(--vt-wishlist-c) !important;
   }
-  .game-card.playing {
-    border-color: var(--vt-playing-c);
+  .playing {
+    border-color: var(--vt-playing-c) !important;
   }
-  .game-card.completed {
-    border-color: var(--vt-completed-c);
+  .completed {
+    border-color: var(--vt-completed-c) !important;
   }
 
   h3 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 100%;
-    padding: 2.5px 5px;
+    padding: 5px 10px;
+  }
+
+  h3:hover {
+    overflow: visible;
+    padding: 5px 0px;
+  }
+
+  h3:hover span {
+    background-color: var(--color-background-mute);
+    padding: 8.75px 10px;
+    border: solid;
+    border-width: 2.5px;
+    border-radius: 10px;
+    margin-left: -100%;
+    margin-right: -100%;
+    text-align: center;
   }
 </style>
