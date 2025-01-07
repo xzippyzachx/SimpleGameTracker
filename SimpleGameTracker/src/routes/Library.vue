@@ -13,7 +13,7 @@ function GetGameData(state) {
     .sort((a, b) => a.name.localeCompare(b.name))
   }
 }
-GetGameData('playing')
+GetGameData('none')
 
 const stateNav = useTemplateRef('state-nav-ref')
 const state = computed(() => stateNav.value?.state)
@@ -32,12 +32,12 @@ onMounted(() => {
         <button id="add-game-btn">Add Game</button>
       </RouterLink>
     </div>
-    <StateNav state="playing" ref="state-nav-ref"/>
+    <StateNav ref="state-nav-ref"/>
   </header>
 
   <main>
     <div v-for="game in libraryGames">
-      <GameCard :id="game.id" :name="game.name" :cover="game.cover"/>
+      <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="game.state"/>
     </div>
   </main>
 </template>

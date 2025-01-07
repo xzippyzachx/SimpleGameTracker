@@ -10,6 +10,10 @@
 
   --vt-c-indigo: #2c3e50;
 
+  --vt-wishlist-c : rgb(228, 71, 202);
+  --vt-playing-c : rgb(79, 186, 248);
+  --vt-completed-c : rgb(58, 223, 71);
+
   --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
   --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
   --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);

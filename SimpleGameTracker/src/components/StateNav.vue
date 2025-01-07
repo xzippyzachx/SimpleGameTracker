@@ -49,12 +49,12 @@ defineExpose({
   }
 
   #wishlist-btn {
-    background-color: rgb(228, 71, 202);
+    background-color: var(--vt-wishlist-c);
   }
   #playing-btn {
-    background-color: rgb(79, 186, 248);
+    background-color: var(--vt-playing-c);
   }
   #completed-btn {
-    background-color: rgb(58, 223, 71);
+    background-color: var(--vt-completed-c);
   }
 </style>
