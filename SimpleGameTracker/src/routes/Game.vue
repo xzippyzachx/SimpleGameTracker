@@ -7,8 +7,7 @@ import StateNav from '../components/StateNav.vue'
 const gameData = ref({})
 const route = useRoute()
 
-function GetGameInfo()
-{
+function GetGameInfo() {
   fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/game-info', {
     method: 'POST',
     headers: {
@@ -28,26 +27,27 @@ function GetGameInfo()
   });
 }
 
-function SetGameState(state)
-{
+function SetGameState(state) {
   gameData.value.state = state
   CacheGameData()
 }
 
-function CacheGameData()
-{
+function CacheGameData() {
   let allGameData = localStorage.gameData ? JSON.parse(localStorage.gameData) : {}
-  allGameData[gameData.value.id] = gameData.value
+  if (gameData.value.state != 'none') {
+    allGameData[gameData.value.id] = gameData.value
+  }
+  else {
+    delete allGameData[gameData.value.id]
+  }
   localStorage.gameData = JSON.stringify(allGameData)
 }
 
-if (localStorage.gameData)
-{
+if (localStorage.gameData) {
   gameData.value = JSON.parse(localStorage.gameData)[route.params.gameId] || {}
 }
 
-if (Object.keys(gameData.value).length == 0)
-{
+if (Object.keys(gameData.value).length == 0) {
   GetGameInfo()
 }
 
@@ -71,7 +71,7 @@ onMounted(() => {
     <div>
       <button @click="$router.back()">Back</button>
     </div>
-    <StateNav ref="state-nav-ref"/>
+    <StateNav v-if="gameData && Object.keys(gameData).length > 0" ref="state-nav-ref"/>
   </header>
 
   <main>

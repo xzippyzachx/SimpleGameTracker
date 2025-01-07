@@ -1,6 +1,28 @@
 <script setup>
+import { ref, computed, useTemplateRef, watch, onMounted} from 'vue'
+
 import GameCard from '../components/GameCard.vue'
 import StateNav from '../components/StateNav.vue'
+
+const libraryGames = ref([])
+
+function GetGameData(state) {
+  if (localStorage.gameData) {
+    libraryGames.value = Object.values(JSON.parse(localStorage.gameData))
+    .filter(game => state == 'none' || game.state == state)
+    .sort((a, b) => a.name.localeCompare(b.name))
+  }
+}
+GetGameData('playing')
+
+const stateNav = useTemplateRef('state-nav-ref')
+const state = computed(() => stateNav.value?.state)
+onMounted(() => {
+  watch(state, async (value, lastValue) => {
+    GetGameData(value)
+  })
+})
+
 </script>
 
 <template>
@@ -10,13 +32,13 @@ import StateNav from '../components/StateNav.vue'
         <button id="add-game-btn">Add Game</button>
       </RouterLink>
     </div>
-    <StateNav state="playing"/>
+    <StateNav state="playing" ref="state-nav-ref"/>
   </header>
 
   <main>
-    <GameCard :id="1" name="The Finals" cover="/"/>
-    <GameCard :id="2" name="Helldivers 2" cover="/"/>
-    <GameCard :id="3" name="Battlefield 2042" cover="/"/>
+    <div v-for="game in libraryGames">
+      <GameCard :id="game.id" :name="game.name" :cover="game.cover"/>
+    </div>
   </main>
 </template>
 

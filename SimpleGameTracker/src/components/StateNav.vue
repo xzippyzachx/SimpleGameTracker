@@ -11,6 +11,15 @@ import { ref } from 'vue'
 
 let state = ref(props.state)
 
+function ChangeState(newState) {
+  if (state.value == newState) {
+    state.value = 'none'
+  }
+  else {
+    state.value = newState
+  }
+}
+
 defineExpose({
   state,
 })
@@ -19,9 +28,9 @@ defineExpose({
 
 <template>
   <nav>
-    <button id="wishlist-btn" :class="{ selected: state == 'wishlist' }" @click="state = 'wishlist'">Wishlist</button>
-    <button id="playing-btn" :class="{ selected: state == 'playing' }" @click="state = 'playing'">Playing</button>
-    <button id="completed-btn" :class="{ selected: state == 'completed' }" @click="state = 'completed'">Completed</button>
+    <button id="wishlist-btn" :class="{ selected: state == 'wishlist' }" @click="ChangeState('wishlist')">Wishlist</button>
+    <button id="playing-btn" :class="{ selected: state == 'playing' }" @click="ChangeState('playing')">Playing</button>
+    <button id="completed-btn" :class="{ selected: state == 'completed' }" @click="ChangeState('completed')">Completed</button>
   </nav>
 </template>
 

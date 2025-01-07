@@ -5,8 +5,8 @@ import GameCard from '../components/GameCard.vue'
 
 const searchName = ref("")
 const searchedGames = ref([])
-function SearchGame()
-{
+
+function SearchGame() {
   fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/search-games', {
     method: 'POST',
     headers: {
