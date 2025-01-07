@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, useTemplateRef, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 import StateNav from '../components/StateNav.vue'
@@ -7,7 +7,7 @@ import StateNav from '../components/StateNav.vue'
 const gameData = ref({})
 const route = useRoute()
 
-function GameInfo()
+function GetGameInfo()
 {
   fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/game-info', {
     method: 'POST',
@@ -28,7 +28,41 @@ function GameInfo()
   });
 }
 
-GameInfo()
+function SetGameState(state)
+{
+  gameData.value.state = state
+  CacheGameData()
+}
+
+function CacheGameData()
+{
+  let allGameData = localStorage.gameData ? JSON.parse(localStorage.gameData) : {}
+  allGameData[gameData.value.id] = gameData.value
+  localStorage.gameData = JSON.stringify(allGameData)
+}
+
+if (localStorage.gameData)
+{
+  gameData.value = JSON.parse(localStorage.gameData)[route.params.gameId] || {}
+}
+
+if (Object.keys(gameData.value).length == 0)
+{
+  GetGameInfo()
+}
+
+const stateNav = useTemplateRef('state-nav-ref')
+onMounted(() => {
+  const state = computed(() => stateNav.value?.state)
+  watch(state, async (value, lastValue) => {
+    SetGameState(value)
+  })
+
+  if (gameData.value.state)
+  {
+    stateNav.value.state = gameData.value.state
+  }
+})
 
 </script>
 
@@ -37,7 +71,7 @@ GameInfo()
     <div>
       <button @click="$router.back()">Back</button>
     </div>
-    <StateNav/>
+    <StateNav ref="state-nav-ref"/>
   </header>
 
   <main>

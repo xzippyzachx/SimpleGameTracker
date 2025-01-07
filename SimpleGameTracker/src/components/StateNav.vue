@@ -3,12 +3,17 @@ const props = defineProps({
   state: {
     type: String,
     required: false,
+    default: 'none',
   },
 })
 
 import { ref } from 'vue'
 
 let state = ref(props.state)
+
+defineExpose({
+  state,
+})
 
 </script>
 
