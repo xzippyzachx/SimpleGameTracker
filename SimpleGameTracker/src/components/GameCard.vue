@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   id: {
     type: Number,
     required: true,
@@ -18,13 +20,20 @@ defineProps({
     default: 'none',
   },
 })
+
+const stateClass = computed(() => ({
+  wishlist: props.state == 'wishlist',
+  playing: props.state == 'playing',
+  completed: props.state == 'completed',
+}))
+
 </script>
 
 <template>
   <RouterLink :to="{ name: 'game', params: { gameId: id } }">
-    <div class="game-card" :class="{wishlist: state == 'wishlist', playing: state == 'playing', completed: state == 'completed'}">
+    <div class="game-card" :class="stateClass">
       <div class="img" :style="{ backgroundImage: 'url(' + cover + ')'}"></div>
-      <h3><span :class="{wishlist: state == 'wishlist', playing: state == 'playing', completed: state == 'completed'}">{{ name }}</span></h3>
+      <h3><span :class="stateClass">{{ name }}</span></h3>
     </div>
   </RouterLink>
 </template>
@@ -46,22 +55,32 @@ defineProps({
   }
 
   .game-card .img {
-    background-color: var(--vt-c-white);
+    border-radius: 8px 8px 0px 0px;
     width: 100%;
     aspect-ratio: 0.75 / 1;
     background-size: 100%;
     background-repeat: no-repeat;
   }
 
-  .wishlist {
+  .game-card.wishlist {
     border-color: var(--vt-wishlist-c) !important;
   }
-  .playing {
+  .wishlist {
+    background-color: var(--vt-wishlist-c) !important;
+  }
+  .game-card.playing {
     border-color: var(--vt-playing-c) !important;
   }
-  .completed {
+  .playing {
+    background-color: var(--vt-playing-c) !important;
+  }
+  .game-card.completed {
     border-color: var(--vt-completed-c) !important;
   }
+  .completed {
+    background-color: var(--vt-completed-c) !important;
+  }
+
 
   h3 {
     white-space: nowrap;

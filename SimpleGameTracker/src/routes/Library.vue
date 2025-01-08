@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, useTemplateRef, watch, onMounted} from 'vue'
+import { ref, computed, useTemplateRef, watch, onMounted } from 'vue'
 
 import GameCard from '../components/GameCard.vue'
 import StateNav from '../components/StateNav.vue'
