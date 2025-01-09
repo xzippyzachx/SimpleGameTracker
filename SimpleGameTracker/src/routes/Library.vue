@@ -27,11 +27,6 @@ onMounted(() => {
 
 <template>
   <header>
-    <div>
-      <RouterLink :to="{ name: 'search' }">
-        <button id="add-game-btn">Add Game</button>
-      </RouterLink>
-    </div>
     <StateNav ref="state-nav-ref"/>
   </header>
 
@@ -47,10 +42,6 @@ onMounted(() => {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-  }
-
-  #add-game-btn {
-    background-color: var(--vt-c-white);
   }
 
 </style>

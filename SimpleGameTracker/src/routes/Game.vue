@@ -68,9 +68,6 @@ onMounted(() => {
 
 <template>
   <header>
-    <div>
-      <button @click="$router.back()">Back</button>
-    </div>
     <StateNav v-if="gameData && Object.keys(gameData).length > 0" ref="state-nav-ref"/>
   </header>
 

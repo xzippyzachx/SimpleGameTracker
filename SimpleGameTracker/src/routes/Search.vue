@@ -31,10 +31,6 @@ function SearchGame() {
 <template>
   <header>
     <div>
-      <button @click="$router.back()">Back</button>
-    </div>
-
-    <div>
       <input v-model="searchName" placeholder="Game Name"></input>
       <button @click="SearchGame()">Search</button>
     </div>
@@ -48,6 +44,10 @@ function SearchGame() {
 </template>
 
 <style scoped>
+  header {
+    margin-top: 20px;
+  }
+
   main {
     display: flex;
     flex-wrap: wrap;
