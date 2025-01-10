@@ -44,10 +44,6 @@ function SearchGame() {
 </template>
 
 <style scoped>
-  header {
-    margin-top: 20px;
-  }
-
   main {
     display: flex;
     flex-wrap: wrap;
@@ -55,9 +51,11 @@ function SearchGame() {
   }
 
   input {
-    height: 25px;
+    height: 40px;
     width: 300px;
     margin: auto 10px;
+    font-size: x-large;
+    padding: 0px 10px;
   }
 
 </style>

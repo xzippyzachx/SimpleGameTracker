@@ -39,13 +39,20 @@ defineExpose({
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    margin-bottom: 20px;
   }
 
   button.selected {
     color: var(--vt-c-white);
     border-style: solid;
     border-width: 2.5px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    button {
+      width: 120px;
+      margin: 2.5px 2.5px;
+      padding: 10px 5px;
+    }
   }
 
   #wishlist-btn {

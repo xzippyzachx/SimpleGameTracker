@@ -1,9 +1,9 @@
 
 <template>
   <nav>
-    <RouterLink :to="{ name: 'library' }"><font-awesome-icon icon="fa-solid fa-gamepad" /></RouterLink>
-    <RouterLink :to="{ name: 'search' }"><font-awesome-icon icon="fa-solid fa-plus" /></RouterLink>
-    <RouterLink :to="{ name: 'library' }"><font-awesome-icon icon="fa-solid fa-bars" /></RouterLink>
+    <RouterLink :to="{ name: 'library' }" :class="{ selected: $route.name == 'library' }"><font-awesome-icon icon="fa-solid fa-gamepad" /></RouterLink>
+    <RouterLink :to="{ name: 'search' }" :class="{ selected: $route.name == 'search' }"><font-awesome-icon icon="fa-regular fa-square-plus" /></RouterLink>
+    <RouterLink :to="{ name: 'library' }" :class="{ selected: $route.name == 'library' }"><font-awesome-icon icon="fa-solid fa-bars" /></RouterLink>
   </nav>
 </template>
 
@@ -15,6 +15,8 @@
     gap: 30px;
     height: 70px;
     background-color: var(--color-background-soft);
+    border-bottom: solid;
+    border-color: var(--vt-c-divider-light-1);
   }
 
   nav a {
@@ -25,12 +27,20 @@
     flex-direction: column;
   }
 
-  nav a:hover {
+  nav a.selected{
     color: var(--vt-c-blue);
   }
 
   nav svg {
     height: 40px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    nav {
+      border-bottom: none;
+      border-top: solid;
+      border-color: var(--vt-c-divider-light-1);
+    }
   }
 
 </style>

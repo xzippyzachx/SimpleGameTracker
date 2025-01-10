@@ -50,6 +50,12 @@ const stateClass = computed(() => ({
     cursor: pointer;
   }
 
+  @media only screen and (max-width: 500px) {
+    .game-card {
+      width: 180px;
+    }
+  }
+
   .game-card:hover {
     scale: 0.99;
   }
