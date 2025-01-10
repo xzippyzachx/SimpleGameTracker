@@ -1,9 +1,9 @@
 
 <template>
   <nav>
+    <RouterLink :to="{ name: 'settings' }" :class="{ selected: $route.name == 'settings' }"><font-awesome-icon icon="fa-solid fa-bars" /></RouterLink>
     <RouterLink :to="{ name: 'library' }" :class="{ selected: $route.name == 'library' }"><font-awesome-icon icon="fa-solid fa-gamepad" /></RouterLink>
     <RouterLink :to="{ name: 'search' }" :class="{ selected: $route.name == 'search' }"><font-awesome-icon icon="fa-regular fa-square-plus" /></RouterLink>
-    <RouterLink :to="{ name: 'library' }" :class="{ selected: $route.name == 'library' }"><font-awesome-icon icon="fa-solid fa-bars" /></RouterLink>
   </nav>
 </template>
 
