@@ -52,7 +52,7 @@ const stateClass = computed(() => ({
 
   @media only screen and (max-width: 500px) {
     .game-card {
-      width: 180px;
+      width: 170px;
     }
   }
 

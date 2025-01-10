@@ -51,7 +51,7 @@ defineExpose({
 
   @media only screen and (max-width: 500px) {
     button {
-      width: 120px;
+      width: 110px;
       margin: 2.5px 2.5px;
       padding: 10px 5px;
     }
