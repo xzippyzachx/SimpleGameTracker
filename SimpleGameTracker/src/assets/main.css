@@ -45,6 +45,11 @@ a {
   text-decoration: none;
 }
 
+input {
+  background-color: var(--color-background-soft);
+  color: var(--vt-c-white-text)
+}
+
 @media only screen and (max-width: 500px) {
   #PageNav {
     position: fixed;

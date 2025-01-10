@@ -45,6 +45,8 @@ defineExpose({
     color: var(--vt-c-white);
     border-style: solid;
     border-width: 2.5px;
+    margin-top: 0px;
+    margin-bottom: 0px;
   }
 
   @media only screen and (max-width: 500px) {
