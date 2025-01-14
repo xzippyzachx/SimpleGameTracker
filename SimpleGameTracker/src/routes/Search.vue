@@ -32,7 +32,7 @@ function SearchGame() {
   <header>
     <div>
       <input v-model="searchName" @keyup.enter="SearchGame()" placeholder="Game Name"></input>
-      <button @click="SearchGame()"><font-awesome-icon icon="fa-solid fa-search" /></button>
+      <button id="search" @click="SearchGame()"><font-awesome-icon icon="fa-solid fa-search" /></button>
     </div>
   </header>
 
@@ -44,7 +44,7 @@ function SearchGame() {
 </template>
 
 <style scoped>
-  header button {
+  #search {
     width: 40px;
     margin: 0px;
     padding: 0px;
