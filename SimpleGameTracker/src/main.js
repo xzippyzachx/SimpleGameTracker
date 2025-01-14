@@ -11,7 +11,7 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 library.add(fas)
 library.add(far)
 
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { createWebHashHistory, createRouter } from 'vue-router'
 import Library from './routes/Library.vue'
 import Search from './routes/Search.vue'
 import Game from './routes/Game.vue'
@@ -25,7 +25,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createMemoryHistory(),
+  history: createWebHashHistory(),
   routes,
 })
 
