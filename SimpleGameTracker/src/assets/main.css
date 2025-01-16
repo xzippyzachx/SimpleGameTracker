@@ -57,3 +57,31 @@ input {
     width: 100%;
   }
 }
+
+.loader {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: block;
+  margin: 30px auto;
+  position: relative;
+  background: var(--vt-c-white);
+  box-shadow: -24px 0 var(--vt-c-white), 24px 0 var(--vt-c-white);
+  box-sizing: border-box;
+  animation: shadowPulse 1s linear infinite;
+}
+
+@keyframes shadowPulse {
+  33% {
+    background: var(--vt-c-white);
+    box-shadow: -24px 0 var(--vt-c-blue), 24px 0 var(--vt-c-white);
+  }
+  66% {
+    background: var(--vt-c-blue);
+    box-shadow: -24px 0 var(--vt-c-white), 24px 0 var(--vt-c-white);
+  }
+  100% {
+    background: var(--vt-c-white);
+    box-shadow: -24px 0 var(--vt-c-white), 24px 0 var(--vt-c-blue);
+  }
+}

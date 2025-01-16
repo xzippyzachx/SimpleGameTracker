@@ -5,8 +5,11 @@ import GameCard from '../components/GameCard.vue'
 
 const searchName = ref("")
 const searchedGames = ref([])
+const searching = ref(false)
 
 function SearchGame() {
+  searching.value = true
+  searchedGames.value = []
   fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/search-games', {
     method: 'POST',
     headers: {
@@ -20,9 +23,11 @@ function SearchGame() {
     response.json().then(res => {
       searchedGames.value = res
     })
+    searching.value = false
   })
   .catch(err => {
     console.error(err)
+    searching.value = false
   })
 
   document.getElementById('search-input').blur()
@@ -39,6 +44,7 @@ function SearchGame() {
   </header>
 
   <main>
+    <span class="loader" v-if="searching"></span>
     <div v-for="game in searchedGames">
       <GameCard :id="game.id" :name="game.name" :cover="game.cover"/>
     </div>
