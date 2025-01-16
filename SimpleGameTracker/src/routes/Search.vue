@@ -22,8 +22,10 @@ function SearchGame() {
     })
   })
   .catch(err => {
-    console.error(err);
-  });
+    console.error(err)
+  })
+
+  document.getElementById('search-input').blur()
 }
 
 </script>
@@ -31,7 +33,7 @@ function SearchGame() {
 <template>
   <header>
     <div>
-      <input v-model="searchName" @keyup.enter="SearchGame()" placeholder="Game Name"></input>
+      <input id="search-input" v-model="searchName" @keyup.enter="SearchGame()" placeholder="Game Name"></input>
       <button id="search" @click="SearchGame()"><font-awesome-icon icon="fa-solid fa-search" /></button>
     </div>
   </header>

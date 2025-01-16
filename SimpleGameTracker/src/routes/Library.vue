@@ -24,14 +24,18 @@ onMounted(() => {
   })
 })
 
+function SearchGame() {
+  document.getElementById('search-input').blur()
+}
+
 </script>
 
 <template>
   <header>
     <StateNav ref="state-nav-ref"/>
     <div>
-      <input v-model="searchName" placeholder="Game Name"></input>
-      <button id="search"><font-awesome-icon icon="fa-solid fa-search" /></button>
+      <input id="search-input" v-model="searchName" @keyup.enter="SearchGame()" placeholder="Game Name"></input>
+      <button id="search" @click="SearchGame()"><font-awesome-icon icon="fa-solid fa-search" /></button>
     </div>
   </header>
 
