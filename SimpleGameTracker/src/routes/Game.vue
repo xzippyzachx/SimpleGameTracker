@@ -6,8 +6,10 @@ import StateNav from '../components/StateNav.vue'
 
 const gameData = ref({})
 const route = useRoute()
+const searching = ref(false)
 
 function GetGameInfo() {
+  searching.value = true
   fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/game-info', {
     method: 'POST',
     headers: {
@@ -21,10 +23,12 @@ function GetGameInfo() {
     response.json().then(res => {
       gameData.value = res
     })
+    searching.value = false
   })
   .catch(err => {
-    console.error(err);
-  });
+    console.error(err)
+    searching.value = false
+  })
 }
 
 function SetGameState(state) {
@@ -64,6 +68,12 @@ onMounted(() => {
   }
 })
 
+const stateClass = computed(() => ({
+  wishlist: gameData.value.state == 'wishlist',
+  playing: gameData.value.state == 'playing',
+  completed: gameData.value.state == 'completed',
+}))
+
 </script>
 
 <template>
@@ -72,24 +82,47 @@ onMounted(() => {
   </header>
 
   <main>
-    <img :src="gameData.cover"></img>
-    <h1>{{ gameData.name }}</h1>
-    <p>{{ gameData.summary }}</p>
+    <span class="loader" v-if="searching"></span>
+    <div id="content" v-if="!searching">
+      <img :src="gameData.cover" :class="stateClass"></img>
+      <h1>{{ gameData.name }}</h1>
+      <p>{{ gameData.summary }}</p>
+    </div>
   </main>
 </template>
 
 <style scoped>
   main {
+    padding: 20px 40px;
+  }
+
+  #content {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 10px;
   }
 
   img {
     max-width: 400px;
+    aspect-ratio: 0.75 / 1;
     border-radius: 10px;
     border: solid;
     border-width: 2.5px;
+  }
+
+  h1 {
+    line-height: normal;
+  }
+
+  .wishlist {
+    border-color: var(--vt-wishlist-c);
+  }
+  .playing {
+    border-color: var(--vt-playing-c);
+  }
+  .completed {
+    border-color: var(--vt-completed-c);
   }
 
 </style>
