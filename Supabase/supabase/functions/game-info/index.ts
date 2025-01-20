@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
   });
   const IGDBAuthData = await IGDBAuthResponse.json();
 
-  const body = `where id = ${gameId}; fields name, cover.image_id, summary;`
+  const body = `where id = ${gameId}; fields name, cover.image_id, summary, alternative_names.name;`
 
   const headers = new Headers({
     "Client-ID": Deno.env.get('CLIENT_ID'),
@@ -45,6 +45,10 @@ Deno.serve(async (req) => {
   gameData = gameData[0]
   let imageId = gameData.cover.image_id
   gameData.cover = `https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`
+
+  let alternativeNames = gameData.alternative_names.map(a => a.name)
+  delete gameData.alternative_names
+  gameData.alternativeNames = alternativeNames.join("|")
 
   return new Response(
     JSON.stringify(gameData),
