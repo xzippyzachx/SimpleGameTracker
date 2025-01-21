@@ -33,7 +33,7 @@ const stateClass = computed(() => ({
   <RouterLink :to="{ name: 'game', params: { gameId: id } }">
     <div class="game-card" :class="stateClass">
       <div class="img" :style="{ backgroundImage: 'url(' + cover + ')'}"></div>
-      <h3><span :class="stateClass">{{ name }}</span></h3>
+      <h4><span :class="stateClass">{{ name }}</span></h4>
     </div>
   </RouterLink>
 </template>
@@ -88,19 +88,20 @@ const stateClass = computed(() => ({
   }
 
 
-  h3 {
+  h4 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     padding: 5px 10px;
+    text-shadow: 1px 1px 10px var(--vt-c-black);
   }
 
-  h3:hover {
+  h4:hover {
     overflow: visible;
     padding: 5px 0px;
   }
 
-  h3:hover span {
+  h4:hover span {
     background-color: var(--color-background-mute);
     padding: 8.75px 10px;
     border: solid;

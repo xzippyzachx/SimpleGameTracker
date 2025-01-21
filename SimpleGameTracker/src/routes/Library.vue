@@ -28,6 +28,10 @@ function SearchGame() {
   document.getElementById('search-input').blur()
 }
 
+function LibrarySearchFilter(game) {
+  return game.name.toLowerCase().includes(searchName.value.toLowerCase()) || game.alternativeNames?.toLowerCase().includes(searchName.value.toLowerCase())
+}
+
 </script>
 
 <template>
@@ -41,7 +45,7 @@ function SearchGame() {
 
   <main>
     <div v-for="game in libraryGames">
-      <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="game.state" v-if="game.name.toLowerCase().includes(searchName.toLowerCase())"/>
+      <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="game.state" v-if="LibrarySearchFilter(game)"/>
     </div>
   </main>
 </template>
