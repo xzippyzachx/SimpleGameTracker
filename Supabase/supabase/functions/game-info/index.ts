@@ -13,14 +13,19 @@ Deno.serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
   
-  const { gameId } = await req.json()
+  let { gameId } = await req.json()
+  let length = 1;
+  if (gameId.constructor === Array) {
+    length = gameId.length
+    gameId = gameId.toString()
+  }
 
   const IGDBAuthResponse = await fetch(`https://id.twitch.tv/oauth2/token?client_id=${Deno.env.get('CLIENT_ID')}&client_secret=${Deno.env.get('CLIENT_SECRET')}&grant_type=client_credentials`, {
     method: 'POST',
   });
   const IGDBAuthData = await IGDBAuthResponse.json();
 
-  const body = `where id = ${gameId}; fields name, cover.image_id, summary, alternative_names.name;`
+  const body = `where id = (${gameId}); fields name, cover.image_id, summary, alternative_names.name;`
 
   const headers = new Headers({
     "Client-ID": Deno.env.get('CLIENT_ID'),
@@ -34,7 +39,7 @@ Deno.serve(async (req) => {
   });
   let gameData = await IGDBGameResponse.json();
 
-  if (gameData.length != 1)
+  if (gameData.length != length)
   {
     return new Response(
       "Invalid gameID",
@@ -42,13 +47,18 @@ Deno.serve(async (req) => {
     )
   }
 
-  gameData = gameData[0]
-  let imageId = gameData.cover.image_id
-  gameData.cover = `https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`
+  for (let i = 0; i < length; i++) {
+    let imageId = gameData[i].cover.image_id
+    gameData[i].cover = `https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`
+  
+    let alternativeNames = gameData[i].alternative_names.map(a => a.name)
+    delete gameData[i].alternative_names
+    gameData[i].alternativeNames = alternativeNames.join("|")
+  }
 
-  let alternativeNames = gameData.alternative_names.map(a => a.name)
-  delete gameData.alternative_names
-  gameData.alternativeNames = alternativeNames.join("|")
+  if (length == 1) {
+    gameData = gameData[0]
+  }
 
   return new Response(
     JSON.stringify(gameData),
