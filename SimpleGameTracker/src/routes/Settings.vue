@@ -48,12 +48,45 @@ function FileUpload() {
   })
 }
 
+function RefreshCache() {
+  let cachedGameData = JSON.parse(localStorage.gameData)
+  
+  fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/game-info', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      "gameId": Object.keys(cachedGameData)
+    })
+  }).then(response => {
+    response.json().then(res => {
+      let gameData = res
+
+      for (let i = 0; i < gameData.length; i++) {
+        let gameId = gameData[i].id
+        let state = cachedGameData[gameId].state
+
+        cachedGameData[gameId] = gameData[i]
+        cachedGameData[gameId].state = state
+      }
+
+      localStorage.gameData = JSON.stringify(cachedGameData)
+    })
+  })
+  .catch(err => {
+    console.error(err)
+  })
+}
+
 </script>
 
 <template>
   <main>
     <button @click="DownloadData()">Download Data</button>
     <button @click="UploadData()">Upload Data</button>
+    <button @click="RefreshCache()">Refresh Cache</button>
   </main>
 </template>
 
