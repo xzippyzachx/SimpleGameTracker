@@ -50,10 +50,12 @@ Deno.serve(async (req) => {
   for (let i = 0; i < length; i++) {
     let imageId = gameData[i].cover.image_id
     gameData[i].cover = `https://images.igdb.com/igdb/image/upload/t_cover_big/${imageId}.jpg`
-  
-    let alternativeNames = gameData[i].alternative_names.map(a => a.name)
-    delete gameData[i].alternative_names
-    gameData[i].alternativeNames = alternativeNames.join("|")
+    
+    if (gameData[i].alternative_names) {
+      let alternativeNames = gameData[i].alternative_names.map(a => a.name)
+      delete gameData[i].alternative_names
+      gameData[i].alternativeNames = alternativeNames.join("|")
+    }
   }
 
   if (length == 1) {
