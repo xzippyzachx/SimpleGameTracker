@@ -25,6 +25,7 @@ const stateClass = computed(() => ({
   wishlist: props.state == 'wishlist',
   playing: props.state == 'playing',
   completed: props.state == 'completed',
+  shelved: props.state == 'shelved',
 }))
 
 </script>
@@ -85,6 +86,12 @@ const stateClass = computed(() => ({
   }
   .completed {
     background-color: var(--vt-completed-c) !important;
+  }
+  .game-card.shelved {
+    border-color: var(--vt-shelved-c) !important;
+  }
+  .shelved {
+    background-color: var(--vt-shelved-c) !important;
   }
 
 

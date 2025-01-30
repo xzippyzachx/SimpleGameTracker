@@ -6,6 +6,7 @@
   margin: 0 auto;
   font-weight: normal;
   background-color: var(--color-background-mute);
+  box-shadow: 0px 0px 50px var(--vt-c-black) 
 }
 
 header {

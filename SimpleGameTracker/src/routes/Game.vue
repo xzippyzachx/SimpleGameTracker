@@ -72,6 +72,7 @@ const stateClass = computed(() => ({
   wishlist: gameData.value.state == 'wishlist',
   playing: gameData.value.state == 'playing',
   completed: gameData.value.state == 'completed',
+  shelved: gameData.value.state == 'shelved',
 }))
 
 </script>
@@ -123,6 +124,9 @@ const stateClass = computed(() => ({
   }
   .completed {
     border-color: var(--vt-completed-c);
+  }
+  .shelved {
+    border-color: var(--vt-shelved-c);
   }
 
 </style>
