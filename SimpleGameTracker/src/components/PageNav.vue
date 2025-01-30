@@ -35,7 +35,7 @@
     height: 40px;
   }
 
-  @media only screen and (max-width: 500px) {
+  @media only screen and (max-width: 550px) {
     nav {
       border-bottom: none;
       border-top: solid;
