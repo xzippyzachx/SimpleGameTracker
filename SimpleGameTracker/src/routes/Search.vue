@@ -3,6 +3,8 @@ import { ref } from 'vue'
 
 import GameCard from '../components/GameCard.vue'
 
+const env = import.meta.env
+
 const searchName = ref("")
 const searchedGames = ref([])
 const searching = ref(false)
@@ -10,7 +12,7 @@ const searching = ref(false)
 function SearchGame() {
   searching.value = true
   searchedGames.value = []
-  fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/search-games', {
+  fetch(`${env.VITE_SUPABASE_API}/functions/v1/search-games`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',

@@ -4,13 +4,15 @@ import { useRoute } from 'vue-router'
 
 import StateNav from '../components/StateNav.vue'
 
+const env = import.meta.env
+
 const gameData = ref({})
 const route = useRoute()
 const searching = ref(false)
 
 function GetGameInfo() {
   searching.value = true
-  fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/game-info', {
+  fetch(`${env.VITE_SUPABASE_API}/functions/v1/game-info`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',

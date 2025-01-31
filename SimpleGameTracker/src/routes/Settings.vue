@@ -1,4 +1,5 @@
 <script setup>
+const env = import.meta.env
 
 function DownloadData() {
   const gameData = JSON.stringify(JSON.parse(localStorage.gameData), null, 4)
@@ -51,7 +52,7 @@ function FileUpload() {
 function RefreshCache() {
   let cachedGameData = JSON.parse(localStorage.gameData)
   
-  fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/game-info', {
+  fetch(`${env.VITE_SUPABASE_API}/functions/v1/game-info`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
