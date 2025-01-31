@@ -4,10 +4,14 @@ import { ref, computed, useTemplateRef, watch, onMounted } from 'vue'
 import GameCard from '../components/GameCard.vue'
 import StateNav from '../components/StateNav.vue'
 
+import { syncingGameData, BusyWait } from '../gameDataSync.js'
+
 const searchName = ref("")
 const libraryGames = ref([])
 
-function GetGameData(state) {
+async function GetGameData(state) {
+  await BusyWait(() => syncingGameData == false)
+  
   if (localStorage.gameData) {
     libraryGames.value = Object.values(JSON.parse(localStorage.gameData))
     .filter(game => state == 'none' || game.state == state)
