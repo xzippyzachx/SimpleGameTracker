@@ -1,17 +1,30 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 import GameCard from '../components/GameCard.vue'
 
 const env = import.meta.env
+const router = useRouter()
+const route = useRoute()
 
 const searchName = ref("")
 const searchedGames = ref([])
 const searching = ref(false)
 
+const searchQuery = computed({
+  get() {
+    return route.query.searchQuery ?? ''
+  },
+  set(searchQuery) {
+    router.replace({ query: { searchQuery } })
+  }
+})
+
 function SearchGame() {
   searching.value = true
   searchedGames.value = []
+  searchQuery.value = searchName.value
   fetch(`${env.VITE_SUPABASE_API}/functions/v1/search-games`, {
     method: 'POST',
     headers: {
@@ -34,6 +47,14 @@ function SearchGame() {
 
   document.getElementById('search-input').blur()
 }
+
+onMounted(() => {
+  if (searchQuery.value)
+  {
+    searchName.value = searchQuery.value
+    SearchGame()
+  }
+})
 
 </script>
 
