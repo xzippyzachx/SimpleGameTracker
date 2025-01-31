@@ -1,5 +1,5 @@
 <script setup>
-const env = import.meta.env
+import { RefreshCache } from '../gameDataCache.js'
 
 function DownloadData() {
   const gameData = JSON.stringify(JSON.parse(localStorage.gameData), null, 4)
@@ -46,38 +46,6 @@ function FileUpload() {
       false,
     )
     inputFileElement.click()
-  })
-}
-
-function RefreshCache() {
-  let cachedGameData = JSON.parse(localStorage.gameData)
-  
-  fetch(`${env.VITE_SUPABASE_API}/functions/v1/game-info`, {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      "gameId": Object.keys(cachedGameData)
-    })
-  }).then(response => {
-    response.json().then(res => {
-      let gameData = res
-
-      for (let i = 0; i < gameData.length; i++) {
-        let gameId = gameData[i].id
-        let state = cachedGameData[gameId].state
-
-        cachedGameData[gameId] = gameData[i]
-        cachedGameData[gameId].state = state
-      }
-
-      localStorage.gameData = JSON.stringify(cachedGameData)
-    })
-  })
-  .catch(err => {
-    console.error(err)
   })
 }
 

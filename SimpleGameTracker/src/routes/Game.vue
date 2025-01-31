@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 
 import StateNav from '../components/StateNav.vue'
 
-import { UpdateSyncGameData } from '../gameDataSync.js'
+import { CacheGameData } from '../gameDataCache.js'
 
 const env = import.meta.env
 
@@ -39,20 +39,8 @@ function GetGameInfo() {
 function SetGameState(state) {
   gameData.value.state = state
   if (!firstState)
-    CacheGameData()
+    CacheGameData(gameData.value)
   firstState = false
-}
-
-function CacheGameData() {
-  let allGameData = localStorage.gameData ? JSON.parse(localStorage.gameData) : {}
-  if (gameData.value.state != 'none') {
-    allGameData[gameData.value.id] = gameData.value
-  }
-  else {
-    delete allGameData[gameData.value.id]
-  }
-  localStorage.gameData = JSON.stringify(allGameData)
-  UpdateSyncGameData()
 }
 
 if (localStorage.gameData) {

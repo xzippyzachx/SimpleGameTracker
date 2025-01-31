@@ -23,8 +23,8 @@ async function GetSyncGameData() {
 }
 GetSyncGameData()
 
-export async function UpdateSyncGameData(firstSync) {
-  if (syncUUID != undefined || firstSync) {
+export async function UpdateSyncGameData() {
+  if (syncUUID != undefined) {
     const { data, error } = await supabase.rpc('update_game_data', { device_uuid: deviceUUID, sync_uuid: syncUUID, game_data: JSON.parse(localStorage.gameData) })
     if (data != null) {
       syncUUID = data
