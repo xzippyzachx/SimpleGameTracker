@@ -3,20 +3,30 @@ const env = import.meta.env
 
 const supabase = createClient(env.VITE_SUPABASE_API, env.VITE_SUPABASE_ANON)
 
-let syncUUID = localStorage.syncUUID
 const deviceUUID = localStorage.deviceUUID ? localStorage.deviceUUID : crypto.randomUUID()
 if (!localStorage.deviceUUID) {
   localStorage.deviceUUID = deviceUUID
 }
 
 export let syncingGameData = false
-async function GetSyncGameData() {
+export async function GetSyncGameData() {
+  let syncUUID = localStorage.syncUUID
   if (syncUUID != undefined) {
     syncingGameData = true
-    const { data, error } = await supabase.rpc('get_game_data', { device_uuid: deviceUUID, sync_uuid: syncUUID })
-    if (data != null) {
-      localStorage.gameData = JSON.stringify(data)
-      console.log("Get sync game data")
+    const { data, error } = await supabase.rpc('get_game_data', { device_uuid: deviceUUID, sync_uuid: syncUUID, local_modifed_at: localStorage.syncModifiedAt })
+    if (data != null && data.length > 0) {
+      localStorage.gameData = JSON.stringify(data[0].game_data)
+      localStorage.syncModifiedAt = data[0].modified_at
+      console.log("Get synced game data")
+    }
+    else {
+      if (localStorage.syncModifiedAt == "1970-01-01T00:00:00.000Z")
+        localStorage.removeItem('syncUUID')
+      console.log("No synced game data")
+    }
+    if (error) {
+      localStorage.removeItem('syncUUID')
+      console.log(error)
     }
     syncingGameData = false
   }
@@ -24,12 +34,21 @@ async function GetSyncGameData() {
 GetSyncGameData()
 
 export async function UpdateSyncGameData() {
+  let syncUUID = localStorage.syncUUID
   if (syncUUID != undefined) {
     const { data, error } = await supabase.rpc('update_game_data', { device_uuid: deviceUUID, sync_uuid: syncUUID, game_data: JSON.parse(localStorage.gameData) })
     if (data != null) {
-      syncUUID = data
-      localStorage.syncUUID = syncUUID
+      localStorage.syncUUID = data[0].new_sync_uuid
+      localStorage.syncModifiedAt = data[0].new_modified_at
       console.log("Update sync game data")
+    }
+    else {
+      localStorage.removeItem('syncUUID')
+      console.log("No synced game data")
+    }
+    if (error) {
+      localStorage.removeItem('syncUUID')
+      console.log(error)
     }
   }
 }
