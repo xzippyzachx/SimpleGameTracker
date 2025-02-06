@@ -9,6 +9,7 @@ import { syncingGameData, BusyWait } from '../gameDataSync.js'
 
 const searchName = ref("")
 const libraryGames = ref([])
+const loading = ref(false)
 
 const searchNameQuery = computed(() => route.query.searchName ?? '')
 const stateQuery = computed(() => route.query.state ?? '')
@@ -21,6 +22,7 @@ const router = useRouter()
 const route = useRoute()
 
 async function GetGameData(state) {
+  loading.value = true
   await BusyWait(() => syncingGameData == false)
 
   if (localStorage.gameData) {
@@ -28,6 +30,7 @@ async function GetGameData(state) {
     .filter(game => state == 'none' || game.state == state)
     .sort((a, b) => a.name.localeCompare(b.name))
   }
+  loading.value = false
 }
 GetGameData('none')
 
@@ -72,6 +75,7 @@ function LibrarySearchFilter(game) {
   </header>
 
   <main>
+    <span class="loader" v-if="loading"></span>
     <div v-for="game in libraryGames">
       <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="game.state" v-if="LibrarySearchFilter(game)"/>
     </div>
