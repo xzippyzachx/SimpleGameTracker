@@ -12,19 +12,19 @@ const searchName = ref("")
 const searchedGames = ref([])
 const searching = ref(false)
 
-const searchQuery = computed({
+const searchNameQuery = computed({
   get() {
-    return route.query.searchQuery ?? ''
+    return route.query.searchName ?? ''
   },
-  set(searchQuery) {
-    router.replace({ query: { searchQuery } })
+  set(searchName) {
+    router.replace({ query: { searchName } })
   }
 })
 
 function SearchGame() {
   searching.value = true
   searchedGames.value = []
-  searchQuery.value = searchName.value
+  searchNameQuery.value = searchName.value
   fetch(`${env.VITE_SUPABASE_API}/functions/v1/search-games`, {
     method: 'POST',
     headers: {
@@ -49,9 +49,9 @@ function SearchGame() {
 }
 
 onMounted(() => {
-  if (searchQuery.value)
+  if (searchNameQuery.value)
   {
-    searchName.value = searchQuery.value
+    searchName.value = searchNameQuery.value
     SearchGame()
   }
 })

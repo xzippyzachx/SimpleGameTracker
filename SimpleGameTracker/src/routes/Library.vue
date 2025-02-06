@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, useTemplateRef, watch, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 import GameCard from '../components/GameCard.vue'
 import StateNav from '../components/StateNav.vue'
@@ -9,9 +10,19 @@ import { syncingGameData, BusyWait } from '../gameDataSync.js'
 const searchName = ref("")
 const libraryGames = ref([])
 
+const searchNameQuery = computed(() => route.query.searchName ?? '')
+const stateQuery = computed(() => route.query.state ?? '')
+
+function UpdateRouteQuery() {
+  router.replace({ query: { searchName: searchName.value, state: state.value } })
+}
+
+const router = useRouter()
+const route = useRoute()
+
 async function GetGameData(state) {
   await BusyWait(() => syncingGameData == false)
-  
+
   if (localStorage.gameData) {
     libraryGames.value = Object.values(JSON.parse(localStorage.gameData))
     .filter(game => state == 'none' || game.state == state)
@@ -25,11 +36,24 @@ const state = computed(() => stateNav.value?.state)
 onMounted(() => {
   watch(state, async (value, lastValue) => {
     GetGameData(value)
+    UpdateRouteQuery()
   })
+
+  if (searchNameQuery.value)
+  {
+    searchName.value = searchNameQuery.value
+    SearchGame()
+  }
+
+  if (stateQuery.value)
+  {
+    stateNav.value.state = stateQuery.value
+  }
 })
 
 function SearchGame() {
   document.getElementById('search-input').blur()
+  UpdateRouteQuery()
 }
 
 function LibrarySearchFilter(game) {
@@ -42,7 +66,7 @@ function LibrarySearchFilter(game) {
   <header>
     <StateNav ref="state-nav-ref"/>
     <div>
-      <input id="search-input" v-model="searchName" @keyup.enter="SearchGame()" placeholder="Game Name"></input>
+      <input id="search-input" v-model="searchName" @keyup.enter="SearchGame()" v-on:blur="SearchGame()" placeholder="Game Name"></input>
       <button id="search" @click="SearchGame()"><font-awesome-icon icon="fa-solid fa-search" /></button>
     </div>
   </header>
