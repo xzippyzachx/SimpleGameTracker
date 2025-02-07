@@ -23,6 +23,7 @@ const routes = [
   { path: '/search', name: 'search', component: Search },
   { path: '/settings', name: 'settings', component: Settings },
   { path: '/game:gameId', name: 'game', component: Game },
+  { path: '/shared:syncHash', name: 'shared', component: Library },
 ]
 
 const router = createRouter({

@@ -13,6 +13,8 @@ const route = useRoute()
 const searching = ref(false)
 let firstState = true
 
+const Shared = (() => sessionStorage.gameDataShared != undefined || route.name == 'shared')
+
 function GetGameInfo() {
   searching.value = true
   fetch(`${env.VITE_SUPABASE_API}/functions/v1/game-info`, {
@@ -43,7 +45,11 @@ function SetGameState(state) {
   firstState = false
 }
 
-if (localStorage.gameData) {
+if (sessionStorage.gameDataShared)
+{
+  gameData.value = JSON.parse(sessionStorage.gameDataShared)[route.params.gameId] || {}
+}
+else if (localStorage.gameData) {
   gameData.value = JSON.parse(localStorage.gameData)[route.params.gameId] || {}
 }
 
@@ -58,7 +64,7 @@ onMounted(() => {
     SetGameState(value)
   })
 
-  if (gameData.value.state)
+  if (gameData.value.state && stateNav.value)
   {
     stateNav.value.state = gameData.value.state
   }
@@ -74,7 +80,7 @@ const stateClass = computed(() => ({
 </script>
 
 <template>
-  <header>
+  <header v-if="!Shared()">
     <StateNav v-if="gameData && Object.keys(gameData).length > 0" ref="state-nav-ref"/>
   </header>
 

@@ -97,6 +97,25 @@ function CopySyncUUID() {
   navigator.clipboard.writeText(syncUUID.value);
 }
 
+async function ShareLink() {
+  let syncHash = await Hash(syncUUID.value)
+  navigator.share({
+    title: document.title,
+    text: "Share",
+    url: `${window.location.origin}/#/shared${syncHash}`
+  })
+}
+
+async function Hash(string) {
+  const utf8 = new TextEncoder().encode(string)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', utf8)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray
+    .map((bytes) => bytes.toString(16).padStart(2, '0'))
+    .join('')
+  return hashHex
+}
+
 </script>
 
 <template>
@@ -104,13 +123,18 @@ function CopySyncUUID() {
     <button @click="DownloadData()">Download Data</button>
     <button @click="UploadData()">Upload Data</button>
     <button @click="RefreshCache()">Refresh Cache</button>
+
     <div>
       <button @click="Sync()">{{ syncButton }}</button>
       <input :type="syncInputType" v-model="syncUUIDInput" @keyup.enter="Sync()" placeholder="Sync Key" :disabled="syncInputDisabled"></input>
       <button id="copy" @click="CopySyncUUID()" v-if="syncInputDisabled"><font-awesome-icon icon="fa-solid fa-copy" /></button>
     </div>
+
     <p>Enable sync and copy your <i>Sync Key</i> into another device to sync your data across multiple devices.</p>
     <p>Warning: Your <i>Sync Key</i> allows read/write access to your data. Only share with trusted devices.</p>
+
+    <button @click="ShareLink()" v-if="syncInputDisabled">Share <font-awesome-icon icon="fa-solid fa-share" /></button>
+    <p v-if="syncInputDisabled">This link can be shared with others to view your library.</p>
   </main>
 </template>
 

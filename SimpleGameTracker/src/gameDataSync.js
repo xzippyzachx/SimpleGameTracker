@@ -8,7 +8,7 @@ if (!localStorage.deviceUUID) {
   localStorage.deviceUUID = deviceUUID
 }
 
-export let syncingGameData = false
+let syncingGameData = false
 export async function GetSyncGameData() {
   let syncUUID = localStorage.syncUUID
   if (syncUUID != undefined) {
@@ -57,3 +57,24 @@ export async function BusyWait(test) {
   const delayMs = 500;
   while(!test()) await new Promise(resolve => setTimeout(resolve, delayMs));
 }
+
+let loadingGameDataShared = false
+export async function GetSharedGameData(syncHash) {
+  loadingGameDataShared = true
+  if (sessionStorage.gameDataShared == undefined) {
+    const { data, error } = await supabase.rpc('get_game_data_share', { sync_hash: syncHash })
+    if (data != null) {
+      sessionStorage.gameDataShared = JSON.stringify(data)
+      console.log("Get shared game data")
+    }
+    else {
+      console.log("No shared game data")
+    }
+    if (error) {
+      console.log(error)
+    }
+  }
+  loadingGameDataShared = false
+}
+
+export const loadingGameData = (() => syncingGameData || loadingGameDataShared )

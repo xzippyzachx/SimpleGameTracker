@@ -5,7 +5,7 @@ import { useRouter, useRoute } from 'vue-router'
 import GameCard from '../components/GameCard.vue'
 import StateNav from '../components/StateNav.vue'
 
-import { syncingGameData, BusyWait } from '../gameDataSync.js'
+import { loadingGameData, BusyWait, GetSharedGameData } from '../gameDataSync.js'
 
 const searchName = ref("")
 const libraryGames = ref([])
@@ -21,11 +21,21 @@ function UpdateRouteQuery() {
 const router = useRouter()
 const route = useRoute()
 
+if (route.params.syncHash != undefined)
+{
+  GetSharedGameData(route.params.syncHash)
+}
+
 async function GetGameData(state) {
   loading.value = true
-  await BusyWait(() => syncingGameData == false)
+  await BusyWait(() => loadingGameData() == false)
 
-  if (localStorage.gameData) {
+  if (sessionStorage.gameDataShared != undefined) {
+    libraryGames.value = Object.values(JSON.parse(sessionStorage.gameDataShared))
+    .filter(game => state == 'none' || game.state == state)
+    .sort((a, b) => a.name.localeCompare(b.name))
+  }
+  else if (localStorage.gameData) {
     libraryGames.value = Object.values(JSON.parse(localStorage.gameData))
     .filter(game => state == 'none' || game.state == state)
     .sort((a, b) => a.name.localeCompare(b.name))
