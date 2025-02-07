@@ -39,6 +39,11 @@ button {
 
 button:hover {
   border-radius: 5px;
+  background-color: var(--vt-c-grey);
+}
+
+button:active {
+  background-color: var(--vt-c-white);
 }
 
 a {
