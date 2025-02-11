@@ -133,7 +133,7 @@ async function Hash(string) {
     <p>Enable sync and copy your <i>Sync Key</i> into another device to sync your data across multiple devices.</p>
     <p>Warning: Your <i>Sync Key</i> allows read/write access to your data. Only share with trusted devices.</p>
 
-    <button @click="ShareLink()" v-if="syncInputDisabled">Share <font-awesome-icon icon="fa-solid fa-share" /></button>
+    <button @click="ShareLink()" v-if="syncInputDisabled">Share<font-awesome-icon icon="fa-solid fa-share" /></button>
     <p v-if="syncInputDisabled">This link can be shared with others to view your library.</p>
   </main>
 </template>
@@ -144,6 +144,10 @@ async function Hash(string) {
     flex-direction: column;
     gap: 10px;
     margin-top: 10px;
+
+    div {
+      display: flex;
+    }
   }
 
   button {
@@ -153,9 +157,9 @@ async function Hash(string) {
   input {
     height: 40px;
     width: 300px;
-    margin: auto;
     font-size: x-large;
     padding: 0px 10px;
+    margin: auto 0px;
     margin-left: 10px;
   }
 
@@ -166,7 +170,7 @@ async function Hash(string) {
   #copy {
     width: 40px;
     height: 40px;
-    margin: 0px;
+    margin: auto 0px;
     padding: 0px;
     border-radius: 0px;
   }

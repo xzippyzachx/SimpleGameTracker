@@ -73,6 +73,10 @@ function LibrarySearchFilter(game) {
   return game.name.toLowerCase().includes(searchName.value.toLowerCase()) || game.alternativeNames?.toLowerCase().includes(searchName.value.toLowerCase())
 }
 
+function AddGame() {
+  router.push({ path: '/search', query: { searchName: searchName.value } })
+}
+
 </script>
 
 <template>
@@ -89,6 +93,7 @@ function LibrarySearchFilter(game) {
     <div v-for="game in libraryGames">
       <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="game.state" v-if="LibrarySearchFilter(game)"/>
     </div>
+    <button v-if="libraryGames.length == 0 && searchName != ''" @click="AddGame()">Add Game<font-awesome-icon icon="fa-regular fa-square-plus" /></button>
   </main>
 </template>
 

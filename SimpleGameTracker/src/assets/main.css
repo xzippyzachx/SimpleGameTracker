@@ -35,6 +35,13 @@ button {
   font-weight: bold;
   border-radius: 10px;
   width: 150px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  
+  svg {
+    margin: auto 0px;
+  }
 }
 
 button:hover {
