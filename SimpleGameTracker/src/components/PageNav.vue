@@ -46,8 +46,18 @@ export default {
     flex-direction: row;
     margin: auto;
     cursor: pointer;
-    font-size: 17px;
     text-wrap: nowrap;
+    
+    h1 {
+      margin: auto;
+      font-size: 26px;
+    }
+
+    @media only screen and (max-width: 550px) {
+      h1 {
+        font-size: 20px;
+      }
+    }
   }
 
   .try svg {
