@@ -26,29 +26,28 @@ if (route.params.syncHash != undefined)
   GetSharedGameData(route.params.syncHash)
 }
 
-async function GetGameData(state) {
+const Shared = (() => sessionStorage.gameDataShared != undefined || route.name == 'shared')
+
+async function GetGameData() {
   loading.value = true
   await BusyWait(() => loadingGameData() == false)
 
+  let gameData = []
   if (sessionStorage.gameDataShared != undefined) {
-    libraryGames.value = Object.values(JSON.parse(sessionStorage.gameDataShared))
-    .filter(game => state == 'none' || game.state == state)
-    .sort((a, b) => a.name.localeCompare(b.name))
+    gameData = Object.values(JSON.parse(sessionStorage.gameDataShared))
   }
   else if (localStorage.gameData) {
-    libraryGames.value = Object.values(JSON.parse(localStorage.gameData))
-    .filter(game => state == 'none' || game.state == state)
-    .sort((a, b) => a.name.localeCompare(b.name))
+    gameData = Object.values(JSON.parse(localStorage.gameData))
   }
+  libraryGames.value = gameData.sort((a, b) => a.name.localeCompare(b.name))
   loading.value = false
 }
-GetGameData('none')
+GetGameData()
 
 const stateNav = useTemplateRef('state-nav-ref')
 const state = computed(() => stateNav.value?.state)
 onMounted(() => {
-  watch(state, async (value, lastValue) => {
-    GetGameData(value)
+  watch(state, async () => {
     UpdateRouteQuery()
   })
 
@@ -69,8 +68,10 @@ function SearchGame() {
   UpdateRouteQuery()
 }
 
-function LibrarySearchFilter(game) {
-  return game.name.toLowerCase().includes(searchName.value.toLowerCase()) || game.alternativeNames?.toLowerCase().includes(searchName.value.toLowerCase())
+function LibraryFiltered() {
+  return libraryGames.value
+  .filter(game => game.name.toLowerCase().includes(searchName.value.toLowerCase()) || game.alternativeNames?.toLowerCase().includes(searchName.value.toLowerCase()))
+  .filter(game => state.value == 'none' || game.state == state.value)
 }
 
 function AddGame() {
@@ -90,10 +91,10 @@ function AddGame() {
 
   <main>
     <span class="loader" v-if="loading"></span>
-    <div v-for="game in libraryGames">
-      <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="game.state" v-if="LibrarySearchFilter(game)"/>
+    <div v-for="game in LibraryFiltered()">
+      <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="game.state"/>
     </div>
-    <button v-if="libraryGames.length == 0 && searchName != ''" @click="AddGame()">Add Game<font-awesome-icon icon="fa-regular fa-square-plus" /></button>
+    <button v-if="!Shared() && searchName != '' && LibraryFiltered().length == 0" @click="AddGame()">Add Game<font-awesome-icon icon="fa-regular fa-square-plus" /></button>
   </main>
 </template>
 
