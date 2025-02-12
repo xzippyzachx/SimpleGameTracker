@@ -163,6 +163,13 @@ function Theme() {
 
     div {
       display: flex;
+      flex-wrap: wrap;
+    }
+  }
+
+  @media only screen and (min-width: 550px) {
+    main {
+      padding-left: 50px;
     }
   }
 
