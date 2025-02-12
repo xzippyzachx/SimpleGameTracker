@@ -65,11 +65,15 @@ export default {
   }
 
   .try:hover {
-    color: var(--vt-c-blue);
+    color: var(--color-accent);
+  }
+
+  nav a:hover{
+    color: var(--color-btn-hover);
   }
 
   nav a.selected{
-    color: var(--vt-c-blue);
+    color: var(--color-accent);
   }
 
   nav svg {

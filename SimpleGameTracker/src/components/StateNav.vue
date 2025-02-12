@@ -43,7 +43,7 @@ defineExpose({
   }
 
   button.selected {
-    color: var(--vt-c-white);
+    color: var(--color-btn);
     border-style: solid;
     border-width: 2.5px;
     margin-top: 0px;

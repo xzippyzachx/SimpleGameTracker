@@ -38,6 +38,8 @@ button {
   display: flex;
   justify-content: center;
   gap: 10px;
+  background-color: var(--color-btn);
+  color: var(--color-btn-text);
   
   svg {
     margin: auto 0px;
@@ -46,11 +48,11 @@ button {
 
 button:hover {
   border-radius: 5px;
-  background-color: var(--vt-c-grey);
+  background-color: var(--color-btn-hover);
 }
 
 button:active {
-  background-color: var(--vt-c-white);
+  background-color: var(--color-btn-active);
 }
 
 a {
@@ -60,7 +62,7 @@ a {
 
 input {
   background-color: var(--color-background-soft);
-  color: var(--vt-c-white-text)
+  color: var(--color-text)
 }
 
 @media only screen and (max-width: 550px) {
@@ -78,23 +80,23 @@ input {
   display: block;
   margin: 30px auto;
   position: relative;
-  background: var(--vt-c-white);
-  box-shadow: -24px 0 var(--vt-c-white), 24px 0 var(--vt-c-white);
+  background: var(--color-text);
+  box-shadow: -24px 0 var(--color-text), 24px 0 var(--color-text);
   box-sizing: border-box;
   animation: shadowPulse 1s linear infinite;
 }
 
 @keyframes shadowPulse {
   33% {
-    background: var(--vt-c-white);
-    box-shadow: -24px 0 var(--vt-c-blue), 24px 0 var(--vt-c-white);
+    background: var(--color-text);
+    box-shadow: -24px 0 var(--color-accent), 24px 0 var(--color-text);
   }
   66% {
-    background: var(--vt-c-blue);
-    box-shadow: -24px 0 var(--vt-c-white), 24px 0 var(--vt-c-white);
+    background: var(--color-accent);
+    box-shadow: -24px 0 var(--color-text), 24px 0 var(--color-text);
   }
   100% {
-    background: var(--vt-c-white);
-    box-shadow: -24px 0 var(--vt-c-white), 24px 0 var(--vt-c-blue);
+    background: var(--color-text);
+    box-shadow: -24px 0 var(--color-text), 24px 0 var(--color-accent);
   }
 }

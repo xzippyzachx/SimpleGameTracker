@@ -31,6 +31,19 @@ const router = createRouter({
   routes,
 })
 
+function DetectTheme() {
+  let theme = 'dark'
+  if (localStorage.getItem('theme')) {
+    theme = localStorage.getItem('theme')
+  } 
+  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    theme = 'light'
+  }
+  localStorage.setItem('theme', theme)
+  document.documentElement.setAttribute('data-theme', theme)
+}
+DetectTheme()
+
 createApp(App)
   .component('font-awesome-icon', FontAwesomeIcon)
   .use(router)

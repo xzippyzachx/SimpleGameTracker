@@ -6,6 +6,7 @@ import { UpdateSyncGameData, GetSyncGameData } from '../gameDataSync.js'
 
 const syncUUID = ref(localStorage.syncUUID)
 const syncUUIDInput = ref(syncUUID.value)
+const theme = ref(localStorage.getItem('theme'))
 
 function DownloadData() {
   const gameData = JSON.stringify(JSON.parse(localStorage.gameData), null, 4)
@@ -116,6 +117,19 @@ async function Hash(string) {
   return hashHex
 }
 
+function Theme() {
+  if (theme.value == 'light') {
+    theme.value = 'dark'
+    localStorage.setItem('theme', 'dark')
+    document.documentElement.setAttribute('data-theme', 'dark')
+  }
+  else if (theme.value == 'dark') {
+    theme.value = 'light'
+    localStorage.setItem('theme', 'light')
+    document.documentElement.setAttribute('data-theme', 'light')
+  }
+}
+
 </script>
 
 <template>
@@ -123,6 +137,8 @@ async function Hash(string) {
     <button @click="DownloadData()">Download Data</button>
     <button @click="UploadData()">Upload Data</button>
     <button @click="RefreshCache()">Refresh Cache</button>
+
+    <button @click="Theme()">Theme<font-awesome-icon :icon="theme == 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun'" /></button>
 
     <div>
       <button @click="Sync()">{{ syncButton }}</button>
