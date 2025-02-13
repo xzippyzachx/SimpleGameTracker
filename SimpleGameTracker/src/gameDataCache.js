@@ -46,3 +46,32 @@ export function RefreshCache() {
     console.error(err)
   })
 }
+
+export function ChangeGameState(gameId, newState) {
+  let gameData = JSON.parse(localStorage.gameData)[gameId] || {}
+  if (Object.keys(gameData).length > 0) {
+    gameData.state = newState
+    CacheGameData(gameData)
+  }
+  else {
+    fetch(`${env.VITE_SUPABASE_API}/functions/v1/game-info`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "gameId": gameId
+      })
+    }).then(response => {
+      response.json().then(res => {
+        gameData = res
+        gameData.state = newState
+        CacheGameData(gameData)
+      })
+    })
+    .catch(err => {
+      console.error(err)
+    })
+  }
+}

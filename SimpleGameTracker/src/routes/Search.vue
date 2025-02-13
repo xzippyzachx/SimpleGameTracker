@@ -12,6 +12,8 @@ const searchName = ref("")
 const searchedGames = ref([])
 const searching = ref(false)
 
+const gameDataStates = GetGameDataStates()
+
 const searchNameQuery = computed({
   get() {
     return route.query.searchName ?? ''
@@ -56,6 +58,14 @@ onMounted(() => {
   }
 })
 
+function GetGameDataStates() {
+  let gameData = {}
+  for (let game of Object.values(JSON.parse(localStorage.gameData))) {
+    gameData[game.id] = game.state
+  }
+  return gameData
+}
+
 </script>
 
 <template>
@@ -69,7 +79,7 @@ onMounted(() => {
   <main>
     <span class="loader" v-if="searching"></span>
     <div v-for="game in searchedGames">
-      <GameCard :id="game.id" :name="game.name" :cover="game.cover"/>
+      <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="gameDataStates[game.id]" :showStateSelect="true"/>
     </div>
   </main>
 </template>

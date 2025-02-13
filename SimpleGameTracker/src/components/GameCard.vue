@@ -1,5 +1,7 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+
+import { ChangeGameState } from '../gameDataCache.js'
 
 const props = defineProps({
   id: {
@@ -19,24 +21,59 @@ const props = defineProps({
     required: false,
     default: 'none',
   },
+  showStateSelect: {
+    type: Boolean,
+    required: false,
+    default: false,
+  }
 })
 
+const localState = ref('')
+const state = computed(() => localState.value != '' ? localState.value : props.state)
+
+const stateSelect = ref(false)
+const stateSelectRef = ref(null);
+
 const stateClass = computed(() => ({
-  wishlist: props.state == 'wishlist',
-  playing: props.state == 'playing',
-  completed: props.state == 'completed',
-  shelved: props.state == 'shelved',
+  wishlist: state.value == 'wishlist',
+  playing: state.value == 'playing',
+  completed: state.value == 'completed',
+  shelved: state.value == 'shelved',
 }))
+
+function ChangeState(newState) {
+  if (state.value == newState) {
+    newState = 'none'
+  }
+  localState.value = newState
+  ChangeGameState(props.id, newState)
+
+  stateSelect.value = false
+}
+
+function OpenStateSelect() {
+  stateSelect.value = true
+  stateSelectRef.value.focus()
+}
 
 </script>
 
 <template>
-  <RouterLink :to="{ name: 'game', params: { gameId: id } }">
-    <div class="game-card" :class="stateClass">
+  <div class="game-card" :class="stateClass" @mouseleave="stateSelect = false">
+    <div class="state-select" v-if="showStateSelect" tabindex="0" @blur="stateSelect = false" ref="stateSelectRef">
+      <button v-if="!stateSelect" class="state-select-bars" :class="stateClass" @click="OpenStateSelect()"><font-awesome-icon icon="fa-regular fa-bookmark"/></button>
+
+      <button v-if="stateSelect" class="wishlist" @mousedown="ChangeState('wishlist')"><font-awesome-icon icon="fa-solid fa-minus"/></button>
+      <button v-if="stateSelect" class="playing" @mousedown="ChangeState('playing')"><font-awesome-icon icon="fa-solid fa-minus"/></button>
+      <button v-if="stateSelect" class="completed" @mousedown="ChangeState('completed')"><font-awesome-icon icon="fa-solid fa-minus"/></button>
+      <button v-if="stateSelect" class="shelved" @mousedown="ChangeState('shelved')"><font-awesome-icon icon="fa-solid fa-minus"/></button>
+    </div>
+    
+    <RouterLink :to="{ name: 'game', params: { gameId: id } }">
       <div class="img" :style="{ backgroundImage: 'url(' + cover + ')'}"></div>
       <h4><span :class="stateClass">{{ name }}</span></h4>
-    </div>
-  </RouterLink>
+    </RouterLink>
+  </div>
 </template>
 
 <style scoped>
@@ -55,10 +92,24 @@ const stateClass = computed(() => ({
     .game-card {
       width: 170px;
     }
+
+    .game-card .state-select {
+      display: flex;
+      max-width: 165px;
+    }
+
+    .game-card:hover .state-select {
+      max-width: 165px !important;
+    }
   }
 
   .game-card:hover {
     scale: 0.99;
+
+    .state-select {
+      display: flex;
+      max-width: 215px;
+    }
   }
 
   .game-card .img {
@@ -117,5 +168,29 @@ const stateClass = computed(() => ({
     margin-left: -100%;
     margin-right: -100%;
     text-align: center;
+  }
+
+  .state-select-bars {
+    max-width: 30px;
+  }
+
+  .state-select {
+    display: none;
+    position: absolute;
+    height: 30px;
+    padding: 5px;
+    gap: 3px;
+
+    button {
+      margin: 0px !important;
+      padding: 0px;
+      box-shadow: 1px 1px 10px var(--vt-c-black);
+    }
+  }
+
+  @media only screen and (max-width: 500px) {
+    .state-select {
+      height: 35px;
+    }
   }
 </style>

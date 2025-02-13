@@ -94,7 +94,7 @@ function AddGame() {
     <div v-for="game in LibraryFiltered()">
       <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="game.state"/>
     </div>
-    <button v-if="!Shared() && searchName != '' && LibraryFiltered().length == 0" @click="AddGame()">Add Game<font-awesome-icon icon="fa-regular fa-square-plus" /></button>
+    <button v-if="!loading && !Shared() && searchName != '' && LibraryFiltered().length == 0" @click="AddGame()">Add Game<font-awesome-icon icon="fa-regular fa-square-plus" /></button>
   </main>
 </template>
 
