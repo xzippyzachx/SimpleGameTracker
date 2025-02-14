@@ -60,6 +60,10 @@ onMounted(() => {
 
 function GetGameDataStates() {
   let gameData = {}
+
+  if (!localStorage.gameData)
+    return gameData
+
   for (let game of Object.values(JSON.parse(localStorage.gameData))) {
     gameData[game.id] = game.state
   }
