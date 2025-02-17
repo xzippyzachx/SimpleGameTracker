@@ -4,13 +4,20 @@ import { useRoute } from 'vue-router'
 
 import StateNav from '../components/StateNav.vue'
 
+import { CacheGameData } from '../gameDataCache.js'
+
+const env = import.meta.env
+
 const gameData = ref({})
 const route = useRoute()
 const searching = ref(false)
+let firstState = true
+
+const Shared = (() => sessionStorage.gameDataShared != undefined || route.name == 'shared')
 
 function GetGameInfo() {
   searching.value = true
-  fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/game-info', {
+  fetch(`${env.VITE_SUPABASE_API}/functions/v1/game-info`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -33,21 +40,16 @@ function GetGameInfo() {
 
 function SetGameState(state) {
   gameData.value.state = state
-  CacheGameData()
+  if (!firstState)
+    CacheGameData(gameData.value)
+  firstState = false
 }
 
-function CacheGameData() {
-  let allGameData = localStorage.gameData ? JSON.parse(localStorage.gameData) : {}
-  if (gameData.value.state != 'none') {
-    allGameData[gameData.value.id] = gameData.value
-  }
-  else {
-    delete allGameData[gameData.value.id]
-  }
-  localStorage.gameData = JSON.stringify(allGameData)
+if (sessionStorage.gameDataShared)
+{
+  gameData.value = JSON.parse(sessionStorage.gameDataShared)[route.params.gameId] || {}
 }
-
-if (localStorage.gameData) {
+else if (localStorage.gameData) {
   gameData.value = JSON.parse(localStorage.gameData)[route.params.gameId] || {}
 }
 
@@ -62,7 +64,7 @@ onMounted(() => {
     SetGameState(value)
   })
 
-  if (gameData.value.state)
+  if (gameData.value.state && stateNav.value)
   {
     stateNav.value.state = gameData.value.state
   }
@@ -72,12 +74,13 @@ const stateClass = computed(() => ({
   wishlist: gameData.value.state == 'wishlist',
   playing: gameData.value.state == 'playing',
   completed: gameData.value.state == 'completed',
+  shelved: gameData.value.state == 'shelved',
 }))
 
 </script>
 
 <template>
-  <header>
+  <header v-if="!Shared()">
     <StateNav v-if="gameData && Object.keys(gameData).length > 0" ref="state-nav-ref"/>
   </header>
 
@@ -123,6 +126,9 @@ const stateClass = computed(() => ({
   }
   .completed {
     border-color: var(--vt-completed-c);
+  }
+  .shelved {
+    border-color: var(--vt-shelved-c);
   }
 
 </style>

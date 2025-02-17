@@ -1,4 +1,5 @@
 import './assets/main.css'
+import './gameDataSync.js'
 
 import { createApp } from 'vue'
 import App from './App.vue'
@@ -22,12 +23,26 @@ const routes = [
   { path: '/search', name: 'search', component: Search },
   { path: '/settings', name: 'settings', component: Settings },
   { path: '/game:gameId', name: 'game', component: Game },
+  { path: '/shared:syncHash', name: 'shared', component: Library },
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
 })
+
+function DetectTheme() {
+  let theme = 'dark'
+  if (localStorage.getItem('theme')) {
+    theme = localStorage.getItem('theme')
+  } 
+  else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    theme = 'light'
+  }
+  localStorage.setItem('theme', theme)
+  document.documentElement.setAttribute('data-theme', theme)
+}
+DetectTheme()
 
 createApp(App)
   .component('font-awesome-icon', FontAwesomeIcon)

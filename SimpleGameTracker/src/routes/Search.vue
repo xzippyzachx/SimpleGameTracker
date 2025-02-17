@@ -1,16 +1,33 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 import GameCard from '../components/GameCard.vue'
+
+const env = import.meta.env
+const router = useRouter()
+const route = useRoute()
 
 const searchName = ref("")
 const searchedGames = ref([])
 const searching = ref(false)
 
+const gameDataStates = GetGameDataStates()
+
+const searchNameQuery = computed({
+  get() {
+    return route.query.searchName ?? ''
+  },
+  set(searchName) {
+    router.replace({ query: { searchName } })
+  }
+})
+
 function SearchGame() {
   searching.value = true
   searchedGames.value = []
-  fetch('https://sdekcxxvsnnzypebfpcr.supabase.co/functions/v1/search-games', {
+  searchNameQuery.value = searchName.value
+  fetch(`${env.VITE_SUPABASE_API}/functions/v1/search-games`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -33,6 +50,26 @@ function SearchGame() {
   document.getElementById('search-input').blur()
 }
 
+onMounted(() => {
+  if (searchNameQuery.value)
+  {
+    searchName.value = searchNameQuery.value
+    SearchGame()
+  }
+})
+
+function GetGameDataStates() {
+  let gameData = {}
+
+  if (!localStorage.gameData)
+    return gameData
+
+  for (let game of Object.values(JSON.parse(localStorage.gameData))) {
+    gameData[game.id] = game.state
+  }
+  return gameData
+}
+
 </script>
 
 <template>
@@ -46,7 +83,7 @@ function SearchGame() {
   <main>
     <span class="loader" v-if="searching"></span>
     <div v-for="game in searchedGames">
-      <GameCard :id="game.id" :name="game.name" :cover="game.cover"/>
+      <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="gameDataStates[game.id]" :showStateSelect="true"/>
     </div>
   </main>
 </template>
