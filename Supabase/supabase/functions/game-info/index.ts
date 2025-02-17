@@ -1,8 +1,3 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
-
-// Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
 import { corsHeaders } from '../_shared/cors.ts'
@@ -25,7 +20,7 @@ Deno.serve(async (req) => {
   });
   const IGDBAuthData = await IGDBAuthResponse.json();
 
-  const body = `where id = (${gameId}); limit 500; fields name, cover.image_id, summary, alternative_names.name;`
+  const body = `where id = (${gameId}); limit 500; fields name, cover.image_id, summary, alternative_names.name, websites.url, websites.category, genres.name, themes.name, rating, first_release_date;`
 
   const headers = new Headers({
     "Client-ID": Deno.env.get('CLIENT_ID'),
@@ -39,8 +34,7 @@ Deno.serve(async (req) => {
   });
   let gameData = await IGDBGameResponse.json();
 
-  if (gameData.length != length)
-  {
+  if (gameData.length != length) {
     return new Response(
       "Invalid gameID",
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
@@ -56,6 +50,36 @@ Deno.serve(async (req) => {
       delete gameData[i].alternative_names
       gameData[i].alternativeNames = alternativeNames.join("|")
     }
+
+    if (gameData[i].first_release_date) {
+      gameData[i].releaseDate = gameData[i].first_release_date
+      delete gameData[i].first_release_date
+    }
+
+    if (gameData[i].websites) {
+      let websites = gameData[i].websites
+      delete gameData[i].websites
+      for (let website of websites) {
+        if (website.category == 1) {
+          gameData[i].official = website.url
+        }
+        if (website.category == 13) {
+          gameData[i].steam = website.url
+        }
+      }
+    }
+
+    if (gameData[i].genres) {
+      let genres = gameData[i].genres.map(g => g.name)
+      delete gameData[i].genres
+      gameData[i].genres = genres
+    }
+
+    if (gameData[i].themes) {
+      let themes = gameData[i].themes.map(t => t.name)
+      delete gameData[i].themes
+      gameData[i].themes = themes
+    }
   }
 
   if (length == 1) {
@@ -68,4 +92,3 @@ Deno.serve(async (req) => {
   )
 
 })
-
