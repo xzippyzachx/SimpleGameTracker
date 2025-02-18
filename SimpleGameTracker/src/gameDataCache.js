@@ -48,7 +48,8 @@ export function RefreshCache() {
 }
 
 export function ChangeGameState(gameId, newState) {
-  let gameData = JSON.parse(localStorage.gameData)[gameId] || {}
+  let allGameData = localStorage.gameData ? JSON.parse(localStorage.gameData) : {}
+  let gameData = (allGameData)[gameId] || {}
   if (Object.keys(gameData).length > 0) {
     gameData.state = newState
     CacheGameData(gameData)
