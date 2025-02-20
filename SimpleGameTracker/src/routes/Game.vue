@@ -77,6 +77,17 @@ const stateClass = computed(() => ({
   shelved: gameData.value.state == 'shelved',
 }))
 
+const GetTags = computed(() => {
+  let tags = []
+  if (gameData.value.genres)
+    tags.push(...gameData.value.genres)
+
+  if (gameData.value.themes)
+    tags.push(...gameData.value.themes)
+
+  return tags
+})
+
 </script>
 
 <template>
@@ -88,8 +99,22 @@ const stateClass = computed(() => ({
     <span class="loader" v-if="searching"></span>
     <div id="content" v-if="!searching">
       <img :src="gameData.cover" :class="stateClass"></img>
-      <h1>{{ gameData.name }}</h1>
-      <p>{{ gameData.summary }}</p>
+      <div id="info">
+        <h1>{{ gameData.name }}</h1>
+        <span v-if="gameData.rating" class="info"><font-awesome-icon icon="fa-solid fa-star" /> {{ ((gameData.rating / 100) * 5).toFixed(2)}}/5</span>
+        <span v-if="gameData.releaseDate" class="info"><font-awesome-icon icon="fa-solid fa-calendar-days" /> {{ new Date(gameData.releaseDate * 1000).toLocaleDateString("en", { year: 'numeric', month: 'long', day: 'numeric' }) }}</span>
+
+        <div id="tags">
+          <span class="tag" v-for="tag in GetTags">{{ tag }}</span>
+        </div>
+
+        <div id="links">
+          <a v-if="gameData.official" :href="gameData.official" target="empty" class="link"><font-awesome-icon icon="fa-solid fa-globe" /> Official</a>
+          <a v-if="gameData.steam" :href="gameData.steam" target="empty" class="link"><font-awesome-icon icon="fa-brands fa-steam" /> Steam</a>
+        </div>
+
+        <p>{{ gameData.summary }}</p>
+      </div>
     </div>
   </main>
 </template>
@@ -101,9 +126,29 @@ const stateClass = computed(() => ({
 
   #content {
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  #info {
+    min-width: 600px;
+    max-width: 780px;
+    display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 10px;
+  }
+
+  #tags, #links {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  @media only screen and (max-width: 700px) {
+    #info {
+      min-width: 0px;
+    }
   }
 
   img {
@@ -129,6 +174,17 @@ const stateClass = computed(() => ({
   }
   .shelved {
     border-color: var(--vt-shelved-c);
+  }
+
+  .tag, .link, .info {
+    background-color: var(--color-background);
+    padding: 2.5px 10px;
+    border-radius: 10px;
+    text-wrap: nowrap;
+  }
+
+  .info {
+    margin-right: auto;
   }
 
 </style>
