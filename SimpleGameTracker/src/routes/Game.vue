@@ -132,8 +132,7 @@ const GetTags = computed(() => {
   }
 
   #info {
-    min-width: 600px;
-    max-width: 780px;
+    flex-basis: 780px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -143,16 +142,11 @@ const GetTags = computed(() => {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-  }
-
-  @media only screen and (max-width: 700px) {
-    #info {
-      min-width: 0px;
-    }
+    gap: 2.5px;
   }
 
   img {
-    max-width: 400px;
+    flex-basis: 400px;
     aspect-ratio: 0.75 / 1;
     border-radius: 10px;
     border: solid;
@@ -185,6 +179,10 @@ const GetTags = computed(() => {
 
   .info {
     margin-right: auto;
+  }
+
+  .link:hover {
+    background-color: var(--color-btn-hover);
   }
 
 </style>
