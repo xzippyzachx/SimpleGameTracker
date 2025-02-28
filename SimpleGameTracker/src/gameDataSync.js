@@ -10,6 +10,9 @@ if (!localStorage.deviceUUID) {
 
 let syncingGameData = false
 export async function GetSyncGameData() {
+  if (!navigator.onLine)
+    return
+
   let syncUUID = localStorage.syncUUID
   if (syncUUID != undefined) {
     syncingGameData = true
@@ -34,6 +37,9 @@ export async function GetSyncGameData() {
 GetSyncGameData()
 
 export async function UpdateSyncGameData() {
+  if (!navigator.onLine)
+    return
+
   let syncUUID = localStorage.syncUUID
   if (syncUUID != undefined) {
     const { data, error } = await supabase.rpc('update_game_data', { device_uuid: deviceUUID, sync_uuid: syncUUID, game_data: JSON.parse(localStorage.gameData) })

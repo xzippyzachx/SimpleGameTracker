@@ -70,10 +70,14 @@ function GetGameDataStates() {
   return gameData
 }
 
+const isOnline = computed(() => {
+  return navigator.onLine
+})
+
 </script>
 
 <template>
-  <header>
+  <header v-if="isOnline">
     <div>
       <input id="search-input" v-model="searchName" @keyup.enter="SearchGame()" placeholder="Game Name"></input>
       <button id="search" @click="SearchGame()"><font-awesome-icon icon="fa-solid fa-search" /></button>
@@ -81,6 +85,7 @@ function GetGameDataStates() {
   </header>
 
   <main>
+    <p v-if="!isOnline">No internet connection found</p>
     <span class="loader" v-if="searching"></span>
     <div v-for="game in searchedGames">
       <GameCard :id="game.id" :name="game.name" :cover="game.cover" :state="gameDataStates[game.id]" :showStateSelect="true"/>

@@ -130,27 +130,32 @@ function Theme() {
   }
 }
 
+const isOnline = computed(() => {
+  return navigator.onLine
+})
+
 </script>
 
 <template>
   <main>
     <button @click="DownloadData()">Download Data</button>
     <button @click="UploadData()">Upload Data</button>
-    <button @click="RefreshCache()">Refresh Cache</button>
+    <button @click="RefreshCache()" :disabled="!isOnline">Refresh Cache</button>
 
     <button @click="Theme()">Theme<font-awesome-icon :icon="theme == 'dark' ? 'fa-solid fa-moon' : 'fa-solid fa-sun'" /></button>
 
     <div>
-      <button @click="Sync()">{{ syncButton }}</button>
-      <input :type="syncInputType" v-model="syncUUIDInput" @keyup.enter="Sync()" placeholder="Sync Key" :disabled="syncInputDisabled"></input>
+      <button @click="Sync()" :disabled="!isOnline">{{ syncButton }}</button>
+      <input :type="syncInputType" v-model="syncUUIDInput" @keyup.enter="Sync()" placeholder="Sync Key" :disabled="syncInputDisabled || !isOnline"></input>
       <button id="copy" @click="CopySyncUUID()" v-if="syncInputDisabled"><font-awesome-icon icon="fa-solid fa-copy" /></button>
     </div>
 
-    <p>Enable sync and copy your <i>Sync Key</i> into another device to sync your data across multiple devices.</p>
-    <p>Warning: Your <i>Sync Key</i> allows read/write access to your data. Only share with trusted devices.</p>
+    <p v-if="isOnline">Enable sync and copy your <i>Sync Key</i> into another device to sync your data across multiple devices.</p>
+    <p v-if="isOnline">Warning: Your <i>Sync Key</i> allows read/write access to your data. Only share with trusted devices.</p>
+    <p v-if="!isOnline">No internet connection found</p>
 
-    <button @click="ShareLink()" v-if="syncInputDisabled">Share<font-awesome-icon icon="fa-solid fa-share" /></button>
-    <p v-if="syncInputDisabled">This link can be shared with others to view your library.</p>
+    <button @click="ShareLink()" v-if="syncInputDisabled && isOnline">Share<font-awesome-icon icon="fa-solid fa-share" /></button>
+    <p v-if="syncInputDisabled && isOnline">This link can be shared with others to view your library.</p>
   </main>
 </template>
 
