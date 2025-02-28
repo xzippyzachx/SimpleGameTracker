@@ -63,10 +63,10 @@ function OpenStateSelect() {
     <div class="state-select" v-if="showStateSelect" tabindex="0" @blur="stateSelect = false" ref="stateSelectRef">
       <button v-if="!stateSelect" class="state-select-bars" :class="stateClass" @click="OpenStateSelect()"><font-awesome-icon icon="fa-regular fa-bookmark"/></button>
 
-      <button v-if="stateSelect" class="wishlist" @mousedown="ChangeState('wishlist')"><font-awesome-icon icon="fa-solid fa-minus"/></button>
-      <button v-if="stateSelect" class="playing" @mousedown="ChangeState('playing')"><font-awesome-icon icon="fa-solid fa-minus"/></button>
-      <button v-if="stateSelect" class="completed" @mousedown="ChangeState('completed')"><font-awesome-icon icon="fa-solid fa-minus"/></button>
-      <button v-if="stateSelect" class="shelved" @mousedown="ChangeState('shelved')"><font-awesome-icon icon="fa-solid fa-minus"/></button>
+      <button v-if="stateSelect" class="wishlist" @mousedown="ChangeState('wishlist')" title="Wishlist"><font-awesome-icon icon="fa-solid fa-minus"/></button>
+      <button v-if="stateSelect" class="playing" @mousedown="ChangeState('playing')" title="Playing"><font-awesome-icon icon="fa-solid fa-minus"/></button>
+      <button v-if="stateSelect" class="completed" @mousedown="ChangeState('completed')" title="Completed"><font-awesome-icon icon="fa-solid fa-minus"/></button>
+      <button v-if="stateSelect" class="shelved" @mousedown="ChangeState('shelved')" title="Shelved"><font-awesome-icon icon="fa-solid fa-minus"/></button>
     </div>
     
     <RouterLink :to="{ name: 'game', params: { gameId: id } }">
