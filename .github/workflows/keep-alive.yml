@@ -14,3 +14,8 @@ jobs:
       - name: Send API Request
         run: |
           curl -X GET "${{ secrets.KEEP_ALIVE_URL }}"
+            -H "apikey: ${{ secrets.KEEP_ALIVE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.KEEP_ALIVE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"sync_hash": "56bd926eb382c1546b3aa5d71869d91c6c906c01362e9bef31759494fa0aa157"}'
+
