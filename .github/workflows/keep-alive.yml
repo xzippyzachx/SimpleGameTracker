@@ -13,4 +13,4 @@ jobs:
     steps:
       - name: Send API Request
         run: |
-          curl -X GET "${{ secrets.ENDPOINT_URL }}"
+          curl -X GET "${{ secrets.KEEP_ALIVE_URL }}"
