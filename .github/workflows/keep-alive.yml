@@ -1,0 +1,20 @@
+name: Weekly Keep Alive Call
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every Sunday
+    - cron: '0 0 * * 0'
+  # Allows manual triggering
+  workflow_dispatch:
+
+jobs:
+  call-endpoint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send API Request
+        run: |
+          curl -X POST "${{ secrets.KEEP_ALIVE_URL }}" \
+            -H "apikey: ${{ secrets.KEEP_ALIVE_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"sync_hash": "56bd926eb382c1546b3aa5d71869d91c6c906c01362e9bef31759494fa0aa157"}'
+
