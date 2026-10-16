@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
   });
   const IGDBAuthData = await IGDBAuthResponse.json();
 
-  const body = `search "${name}"; limit 100; fields name, cover.image_id; where category = (0,4,8,9,11) & version_parent = null & cover != null;`
+  const body = `search "${name}"; limit 100; fields name, cover.image_id; where game_type = (0,1,2,4,8,9,11) & version_parent = null & cover != null;`
 
   const headers = new Headers({
     "Client-ID": Deno.env.get('CLIENT_ID'),
