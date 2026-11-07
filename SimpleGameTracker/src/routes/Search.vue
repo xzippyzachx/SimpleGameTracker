@@ -27,7 +27,7 @@ function SearchGame() {
   searching.value = true
   searchedGames.value = []
   searchNameQuery.value = searchName.value
-  fetch(`${env.VITE_SUPABASE_API}/functions/v1/search-games`, {
+  fetch(`${env.VITE_PB_API}/api/igdb/search-games`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',

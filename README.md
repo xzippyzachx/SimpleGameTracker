@@ -11,4 +11,6 @@ Simple Game Tracker is a web app for tracking video games that you've played or 
 - Dark/light themes
 
 Keep in mind your library data is only saved locally to the browser you access the web app with (Unless you use the sync feature).
-All video game date is sourced from https://www.igdb.com/
+All video game data is sourced from https://www.igdb.com/
+
+Development and deployment docs: see `SimpleGameTracker/` (frontend) and `PocketBase/` (backend API).

@@ -1,0 +1,10 @@
+.env
+pb_data/
+*.exe
+*.exe~
+pb.pid
+pb_test.log
+pb_test_err.log
+pb_test.pid
+*.tar
+*.tar.gz

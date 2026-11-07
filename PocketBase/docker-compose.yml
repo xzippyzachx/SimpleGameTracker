@@ -1,0 +1,17 @@
+name: simplegametracker
+
+services:
+  pocketbase:
+    build: .
+    image: simplegametracker-pocketbase:latest
+    container_name: simplegametracker-pb
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8090:8090"
+    env_file:
+      - .env
+    volumes:
+      - ./pb_data:/pb_data
+    # CORS: set the first origin to your deployed frontend (e.g. your GitHub
+    # Pages domain). The localhost entries cover the vite dev server.
+    command: ["serve", "--http=0.0.0.0:8090", "--origins=https://your-frontend-origin.example.com,http://localhost:5173,http://127.0.0.1:5173"]

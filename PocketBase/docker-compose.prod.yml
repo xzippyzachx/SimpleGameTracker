@@ -1,0 +1,20 @@
+# Production compose: HTTPS on 443 via PocketBase's built-in Let's Encrypt
+# autocert for the domain in PB_HOST (cert cached in pb_data, auto-renewed),
+# HTTP 80 -> HTTPS redirect, and the CORS allowlist from PB_ORIGINS.
+# Both values come from .env (see .env.example); ports 80/443 must be
+# reachable from the internet for certificate issuance.
+name: simplegametracker
+
+services:
+  pocketbase:
+    image: simplegametracker-pocketbase:latest
+    container_name: simplegametracker-pb
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - .env
+    volumes:
+      - ./pb_data:/pb_data
+    command: ["serve", "${PB_HOST}", "--origins=${PB_ORIGINS}"]

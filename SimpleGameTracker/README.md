@@ -27,3 +27,19 @@ npm run dev
 ```sh
 npm run build
 ```
+
+### Deploy to GitHub Pages
+
+```sh
+npm run deploy
+```
+
+Builds `dist/` and force-pushes it to the `gh-pages` branch. A custom domain (if configured) comes from the `CNAME` file in `public/`, which publishes with every deploy.
+
+### Backend API
+
+Set `VITE_PB_API` in `.env.local` (see the root [README](../README.md)) before building — the API URL is baked into the bundle at build time:
+
+- Local dev: `VITE_PB_API="http://127.0.0.1:8090"`
+- Production: the API domain you deploy to, e.g. `VITE_PB_API="https://api.example.com"`
+

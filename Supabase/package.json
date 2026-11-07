@@ -1,8 +1,0 @@
-{
-  "devDependencies": {
-    "supabase": "^2.121.0"
-  },
-  "dependencies": {
-    "match-sorter": "^8.0.0"
-  }
-}

@@ -17,7 +17,7 @@ export function CacheGameData(gameData) {
 export function RefreshCache() {
   let cachedGameData = JSON.parse(localStorage.gameData)
   
-  fetch(`${env.VITE_SUPABASE_API}/functions/v1/game-info`, {
+  fetch(`${env.VITE_PB_API}/api/igdb/game-info`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -55,7 +55,7 @@ export function ChangeGameState(gameId, newState) {
     CacheGameData(gameData)
   }
   else {
-    fetch(`${env.VITE_SUPABASE_API}/functions/v1/game-info`, {
+    fetch(`${env.VITE_PB_API}/api/igdb/game-info`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

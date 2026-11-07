@@ -17,7 +17,7 @@ const Shared = (() => sessionStorage.gameDataShared != undefined || route.name =
 
 function GetGameInfo() {
   searching.value = true
-  fetch(`${env.VITE_SUPABASE_API}/functions/v1/game-info`, {
+  fetch(`${env.VITE_PB_API}/api/igdb/game-info`, {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
