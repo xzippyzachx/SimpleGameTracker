@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -162,17 +163,28 @@ func igdbGameInfo(e *core.RequestEvent) error {
 		return e.BadRequestError("invalid body", err)
 	}
 
+	// Accept string ids as before, numeric ids (the search results carry
+	// numeric ids), and arrays of either.
 	gameIDs := []string{}
-	if bytes.HasPrefix(bytes.TrimSpace(body.GameID), []byte("[")) {
-		if err := json.Unmarshal(body.GameID, &gameIDs); err != nil {
+	trimmed := bytes.TrimSpace(body.GameID)
+	if bytes.HasPrefix(trimmed, []byte("[")) {
+		var rawList []json.RawMessage
+		if err := json.Unmarshal(body.GameID, &rawList); err != nil {
 			return e.BadRequestError("invalid gameId", err)
+		}
+		for _, raw := range rawList {
+			id, err := parseGameID(raw)
+			if err != nil {
+				return e.BadRequestError("invalid gameId", err)
+			}
+			gameIDs = append(gameIDs, id)
 		}
 	} else {
-		var single string
-		if err := json.Unmarshal(body.GameID, &single); err != nil {
+		id, err := parseGameID(trimmed)
+		if err != nil {
 			return e.BadRequestError("invalid gameId", err)
 		}
-		gameIDs = append(gameIDs, single)
+		gameIDs = append(gameIDs, id)
 	}
 	length := len(gameIDs)
 	gameIDList := strings.Join(gameIDs, ",")
@@ -244,6 +256,23 @@ func igdbGameInfo(e *core.RequestEvent) error {
 		return e.JSON(http.StatusOK, gameData[0])
 	}
 	return e.JSON(http.StatusOK, gameData)
+}
+
+// parseGameID converts a raw JSON game id (string or number) into its
+// canonical string form.
+func parseGameID(raw []byte) (string, error) {
+	var num float64
+	if err := json.Unmarshal(raw, &num); err == nil {
+		return strconv.FormatFloat(num, 'f', -1, 64), nil
+	}
+	var str string
+	if err := json.Unmarshal(raw, &str); err != nil {
+		return "", fmt.Errorf("gameId must be a string or number")
+	}
+	if _, err := strconv.ParseFloat(str, 64); err != nil {
+		return "", fmt.Errorf("gameId must be numeric")
+	}
+	return str, nil
 }
 
 // flattenNames replaces a list of {name: "..."} objects with a plain array

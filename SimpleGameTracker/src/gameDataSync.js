@@ -1,3 +1,5 @@
+import { ApplyServerGames } from './gameDataCache.js'
+
 const env = import.meta.env
 
 const PB_API = env.VITE_PB_API
@@ -35,7 +37,9 @@ export async function GetSyncGameData() {
     }
 
     if (!failed && data != null && data.length > 0) {
-      localStorage.gameData = JSON.stringify(data[0].game_data)
+      // The server only returns the collection when its modified date is
+      // newer than the client's last sync, so the server version wins here.
+      await ApplyServerGames(data[0].games)
       localStorage.syncModifiedAt = data[0].modified_at
       console.log("Get synced game data")
     }
@@ -69,7 +73,15 @@ export async function UpdateSyncGameData() {
         body: JSON.stringify({
           "device_uuid": deviceUUID,
           "sync_uuid": syncUUID,
-          "game_data": JSON.parse(localStorage.gameData ?? '{}')
+          "games": Object.values(JSON.parse(localStorage.gameData ?? '{}'))
+            .filter(game => {
+              const id = Number(game.id)
+              return Number.isFinite(id) && game.state != undefined && game.state != 'none'
+            })
+            .map(game => ({
+              "game_id": Number(game.id),
+              "state": game.state
+            }))
         })
       })
       failed = !response.ok
@@ -124,8 +136,40 @@ export async function GetSharedGameData(syncHash) {
       console.error("get_game_data_share failed:", err)
     }
 
-    if (data != null) {
-      sessionStorage.gameDataShared = JSON.stringify(data)
+    if (data != null && data.length > 0) {
+      // The share endpoint only returns ids + states; fetch the full IGDB
+      // data for those ids and build the game objects the UI expects.
+      const gameIds = data.map(game => game.game_id)
+      let igdbData = []
+      try {
+        const response = await fetch(`${PB_API}/api/igdb/game-info`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "gameId": gameIds
+          })
+        })
+        if (response.ok) {
+          igdbData = await response.json()
+        }
+      }
+      catch (err) {
+        console.error("get_game_data_share igdb fetch failed:", err)
+      }
+
+      const gameDataShared = {}
+      for (let game of igdbData) {
+        gameDataShared[game.id] = game
+      }
+      for (let game of data) {
+        if (gameDataShared[game.game_id] != undefined) {
+          gameDataShared[game.game_id].state = game.state
+        }
+      }
+      sessionStorage.gameDataShared = JSON.stringify(gameDataShared)
       console.log("Get shared game data")
     }
     else {
