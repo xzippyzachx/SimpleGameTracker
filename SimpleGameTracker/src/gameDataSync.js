@@ -116,6 +116,51 @@ export async function BusyWait(test) {
   while(!test()) await new Promise(resolve => setTimeout(resolve, delayMs));
 }
 
+// Creates a short-lived, single-use pairing code for the given sync key. The
+// code (not the key) is what gets shared, so the key never lands in a URL or
+// browser history.
+export async function CreatePairCode(syncUUID) {
+  try {
+    const response = await fetch(`${PB_API}/api/sync/game-data/pair/create`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ "sync_uuid": syncUUID })
+    })
+    if (!response.ok)
+      return null
+    return await response.json()
+  }
+  catch (err) {
+    console.error("create_pair_code failed:", err)
+    return null
+  }
+}
+
+// Exchanges a pairing code for the sync key. Returns null when the code is
+// unknown, expired or already used.
+export async function ClaimPairCode(code) {
+  try {
+    const response = await fetch(`${PB_API}/api/sync/game-data/pair/claim`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ "code": code })
+    })
+    if (!response.ok)
+      return null
+    return await response.json()
+  }
+  catch (err) {
+    console.error("claim_pair_code failed:", err)
+    return null
+  }
+}
+
 let loadingGameDataShared = false
 export async function GetSharedGameData(syncHash) {
   loadingGameDataShared = true

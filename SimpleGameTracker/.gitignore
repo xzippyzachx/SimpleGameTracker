@@ -13,7 +13,11 @@ dist
 dist-ssr
 dev-dist
 coverage
-*.local
+
+# Environment files (see .env.example)
+.env
+.env.*
+!.env.example
 
 /cypress/videos/
 /cypress/screenshots/

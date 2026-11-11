@@ -4,6 +4,7 @@ The backend is a custom [PocketBase](https://pocketbase.io) binary (Go) in this 
 
 - `POST /api/igdb/search-games` and `POST /api/igdb/game-info` — IGDB proxies
 - `GET/POST /api/sync/game-data` and `GET /api/sync/game-data/share/{hash}` — cross-device sync and sharing
+- `POST /api/sync/game-data/pair/create` and `POST /api/sync/game-data/pair/claim` — short-lived, single-use pairing codes used to hand a sync key to another device without putting the key in a URL
 
 ### Running locally
 
@@ -28,6 +29,8 @@ Or with Docker: `docker compose up -d --build` (http://127.0.0.1:8090). The dev 
 
 `VITE_PB_API` in `../SimpleGameTracker/.env.local` points the frontend at the API
 (e.g. `VITE_PB_API="http://127.0.0.1:8090"`); run the frontend with `npm run dev`.
+Production builds read `../SimpleGameTracker/.env.production` instead — see the
+frontend README for the full env layout.
 
 ### Deploying to a server
 

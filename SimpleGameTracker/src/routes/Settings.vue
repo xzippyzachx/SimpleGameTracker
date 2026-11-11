@@ -1,12 +1,32 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import { RefreshCache } from '../gameDataCache.js'
-import { UpdateSyncGameData, GetSyncGameData } from '../gameDataSync.js'
+import { UpdateSyncGameData, GetSyncGameData, CreatePairCode, ClaimPairCode } from '../gameDataSync.js'
+
+const route = useRoute()
+const router = useRouter()
 
 const syncUUID = ref(localStorage.syncUUID)
 const syncUUIDInput = ref(syncUUID.value)
 const theme = ref(localStorage.getItem('theme'))
+
+// Pairing codes are 8 characters from an alphabet without I, O, 0 or 1.
+const pairCodePattern = /^[A-HJ-NP-Z2-9]{8}$/
+
+onMounted(() => {
+  const pairParam = route.query.pair
+  if (!pairParam) {
+    return
+  }
+  // Only prefill when sync is off; never clobber an existing sync key.
+  if (!syncUUID.value) {
+    syncUUIDInput.value = String(pairParam).toUpperCase()
+  }
+  // Drop the code from the URL either way so it does not linger in history.
+  router.replace({ query: {} })
+})
 
 function DownloadData() {
   const gameData = JSON.stringify(JSON.parse(localStorage.gameData), null, 4)
@@ -76,9 +96,23 @@ async function Sync() {
       await GetSyncGameData()
       console.log("Sync Enabled")
     }
+    else if (pairCodePattern.test(String(syncUUIDInput.value).trim().toUpperCase())) {
+      const data = await ClaimPairCode(String(syncUUIDInput.value).trim().toUpperCase())
+      if (data?.sync_uuid) {
+        localStorage.syncUUID = data.sync_uuid
+        localStorage.syncModifiedAt = "1970-01-01T00:00:00.000Z"
+        await GetSyncGameData()
+        console.log("Sync Enabled")
+      }
+      else {
+        console.log("This pairing code is invalid or has expired.")
+      }
+    }
 
-    syncUUID.value = localStorage.syncUUID
-    syncUUIDInput.value = syncUUID.value
+    if (localStorage.syncUUID) {
+      syncUUID.value = localStorage.syncUUID
+      syncUUIDInput.value = syncUUID.value
+    }
   }
 }
 
@@ -105,6 +139,39 @@ async function ShareLink() {
     text: "Share",
     url: `${window.location.origin}/#/shared${syncHash}`
   })
+}
+
+async function ShareSyncKey() {
+  const data = await CreatePairCode(syncUUID.value)
+  if (!data?.code) {
+    console.log("Could not create a pairing code. Please try again.")
+    return
+  }
+
+  const url = `${window.location.origin}/#/settings?pair=${encodeURIComponent(data.code)}`
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: document.title,
+        text: "Scan this QR code to sync your game library with this device. The code expires in 5 minutes.",
+        url
+      })
+    }
+    catch {
+      // User dismissed the share sheet.
+    }
+    return
+  }
+
+  // Desktop browsers have no share sheet; hand the user the link instead.
+  try {
+    await navigator.clipboard.writeText(url)
+    console.log(`Pairing code ${data.code} copied to your clipboard. It expires in 5 minutes and can only be used once.`)
+  }
+  catch {
+    console.log(`Pairing code: ${data.code} (expires in 5 minutes, single use).`)
+  }
 }
 
 async function Hash(string) {
@@ -148,6 +215,7 @@ const isOnline = computed(() => {
       <button @click="Sync()" :disabled="!isOnline">{{ syncButton }}</button>
       <input :type="syncInputType" v-model="syncUUIDInput" @keyup.enter="Sync()" placeholder="Sync Key" :disabled="syncInputDisabled || !isOnline"></input>
       <button id="copy" @click="CopySyncUUID()" v-if="syncInputDisabled"><font-awesome-icon icon="fa-solid fa-copy" /></button>
+      <button id="share-sync-key" @click="ShareSyncKey()" v-if="syncInputDisabled && isOnline"><font-awesome-icon icon="fa-solid fa-qrcode" /></button>
     </div>
 
     <p v-if="isOnline">Enable sync and copy your <i>Sync Key</i> into another device to sync your data across multiple devices.</p>
@@ -195,7 +263,7 @@ const isOnline = computed(() => {
     padding-left: 10px;
   }
 
-  #copy {
+  #copy, #share-sync-key {
     width: 40px;
     height: 40px;
     margin: auto 0px;

@@ -1,10 +1,13 @@
 package main
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"net/http"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,7 +19,48 @@ const (
 	// pbDateLayout is PocketBase's stored datetime format (locale-independent):
 	// space-separated, millisecond precision, Z suffix.
 	pbDateLayout = "2006-01-02 15:04:05.000Z"
+
+	// pairCodeAlphabet omits visually ambiguous characters (I, O, 0, 1) so a
+	// code read off a screen can be typed without confusion. 32 characters
+	// divides 256 evenly, so byte % len(alphabet) is unbiased.
+	pairCodeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+	pairCodeLength   = 8
+	pairCodeTTL      = 5 * time.Minute
 )
+
+// pairCodeEntry is a short-lived, single-use code that can be exchanged for a
+// sync key on another device without putting the key itself in a URL.
+type pairCodeEntry struct {
+	syncUUID  string
+	expiresAt time.Time
+}
+
+var (
+	pairCodesMu sync.Mutex
+	pairCodes   = map[string]pairCodeEntry{}
+)
+
+// generatePairCode returns a random code drawn from pairCodeAlphabet.
+func generatePairCode() (string, error) {
+	buf := make([]byte, pairCodeLength)
+	if _, err := rand.Read(buf); err != nil {
+		return "", err
+	}
+	code := make([]byte, pairCodeLength)
+	for i, b := range buf {
+		code[i] = pairCodeAlphabet[int(b)%len(pairCodeAlphabet)]
+	}
+	return string(code), nil
+}
+
+// prunePairCodesLocked drops expired entries. Callers must hold pairCodesMu.
+func prunePairCodesLocked(now time.Time) {
+	for code, entry := range pairCodes {
+		if now.After(entry.expiresAt) {
+			delete(pairCodes, code)
+		}
+	}
+}
 
 // validGameStates are the states a game row may hold.
 var validGameStates = map[string]bool{
@@ -44,6 +88,8 @@ func registerSyncRoutes(se *core.ServeEvent) {
 	g.GET("/game-data", getGameData)
 	g.POST("/game-data", updateGameData)
 	g.GET("/game-data/share/{syncHash}", getGameDataShare)
+	g.POST("/game-data/pair/create", createPairCode)
+	g.POST("/game-data/pair/claim", claimPairCode)
 
 	// Keep sync_hash in sync with sync_uuid (sha256 of the uuid as hex).
 	se.App.OnRecordCreate("game_collection").BindFunc(func(e *core.RecordEvent) error {
@@ -235,4 +281,85 @@ func getGameDataShare(e *core.RequestEvent) error {
 		return e.InternalServerError("failed to load games", err)
 	}
 	return e.JSON(http.StatusOK, games)
+}
+
+// POST /api/sync/game-data/pair/create
+// Body: {"sync_uuid": "..."}
+// Returns a short-lived, single-use code that another device can exchange for
+// the sync key, so the key itself never has to travel in a URL.
+func createPairCode(e *core.RequestEvent) error {
+	var body struct {
+		SyncUUID string `json:"sync_uuid"`
+	}
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("invalid body", err)
+	}
+
+	syncUUID := strings.TrimSpace(body.SyncUUID)
+	if syncUUID == "" {
+		return e.BadRequestError("sync_uuid is required", nil)
+	}
+
+	records, err := e.App.FindRecordsByFilter("game_collection", "sync_uuid = {:sync_uuid}", "", 1, 0, map[string]any{"sync_uuid": syncUUID})
+	if err != nil {
+		return e.InternalServerError("lookup failed", err)
+	}
+	if len(records) == 0 {
+		return e.BadRequestError("unknown sync_uuid", nil)
+	}
+
+	code, err := generatePairCode()
+	if err != nil {
+		return e.InternalServerError("failed to generate code", err)
+	}
+
+	now := time.Now()
+	expiresAt := now.Add(pairCodeTTL)
+
+	pairCodesMu.Lock()
+	prunePairCodesLocked(now)
+	pairCodes[code] = pairCodeEntry{syncUUID: syncUUID, expiresAt: expiresAt}
+	pairCodesMu.Unlock()
+
+	return e.JSON(http.StatusOK, map[string]any{
+		"code":       code,
+		"expires_at": expiresAt.UTC().Format(time.RFC3339),
+	})
+}
+
+// POST /api/sync/game-data/pair/claim
+// Body: {"code": "ABCD2345"}
+// Exchanges a valid, unexpired, unused code for the sync key. Unknown, expired
+// and already-used codes all return the same error so the endpoint cannot be
+// used to probe which codes exist.
+func claimPairCode(e *core.RequestEvent) error {
+	var body struct {
+		Code string `json:"code"`
+	}
+	if err := e.BindBody(&body); err != nil {
+		return e.BadRequestError("invalid body", err)
+	}
+
+	code := strings.ToUpper(strings.TrimSpace(body.Code))
+	if code == "" {
+		return e.BadRequestError("code is required", nil)
+	}
+
+	now := time.Now()
+
+	pairCodesMu.Lock()
+	prunePairCodesLocked(now)
+	entry, ok := pairCodes[code]
+	if ok {
+		delete(pairCodes, code)
+	}
+	pairCodesMu.Unlock()
+
+	if !ok {
+		return e.BadRequestError("invalid or expired code", nil)
+	}
+
+	return e.JSON(http.StatusOK, map[string]any{
+		"sync_uuid": entry.syncUUID,
+	})
 }
